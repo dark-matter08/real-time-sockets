@@ -1,0 +1,2 @@
+docker volume create rts_directus_db_volume
+docker compose up

@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+    middleware:
+        container_name: middleware
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        command: sh -c "wait && npm run dev"
+        volumes:
+            - ./src:/app/src
+            - ./package.json:/app/package.json
+            - ./tsconfig.json:/app/tsconfig.json
+            - ./tsoa.json:/app/tsoa.json
+            - ./jest.config.ts:/app/jest.config.ts
+        environment:
+            PORT: 8000
+        ports:
+            - 8000:8000
+        stdin_open: true
+        tty: true

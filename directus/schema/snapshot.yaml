@@ -1,0 +1,3 @@
+version: 1
+directus: 12.1.2
+vendor: postgres
