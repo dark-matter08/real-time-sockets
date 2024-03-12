@@ -1,52 +1,63 @@
-import { Backend, client } from '../../directus/directus';
+import {
+  Backend,
+  DirectusClient,
+  client,
+  createItem,
+  createItems,
+  deleteItem,
+  readItem,
+  readItems,
+  updateItem,
+} from '../../directus';
 
 export default class SimpleDataService<T> {
   typeName: string;
-  context: any;
+  context: DirectusClient<Backend>;
 
   constructor(typeName: string) {
     this.typeName = typeName;
     this.context = client;
   }
 
-  static async resolveRelation<R>(
-    relations: any[],
-    fieldName: string,
-    type: string,
-    relationType: string
-  ) {
-    const resolver = new SimpleDataService<any>(relationType);
-    const relationService = new SimpleDataService<R>(type);
+  // static async resolveRelation<R>(
+  //   relations: any[],
+  //   fieldName: string,
+  //   type: string,
+  //   relationType: string
+  // ) {
+  //   const resolver = new SimpleDataService<any>(relationType);
+  //   const relationService = new SimpleDataService<R>(type);
 
-    await relations
-      .reduce(async (previous, relation) => {
-        const result = await previous;
-        return [...result, await resolver.get(relation)];
-      }, Promise.resolve([]))
-      .then((elements) => {
-        relations = elements.map((element) => element[fieldName]);
-      });
+  //   await relations
+  //     .reduce(async (previous, relation) => {
+  //       const result = await previous;
+  //       return [...result, await resolver.get(relation)];
+  //     }, Promise.resolve([]))
+  //     .then((elements) => {
+  //       relations = elements.map((element) => element[fieldName]);
+  //     });
 
-    await relations
-      .reduce(async (previous, relation) => {
-        const result = await previous;
-        return [...result, await relationService.get(relation)];
-      }, Promise.resolve([]))
-      .then((elements) => {
-        relations = elements.map((element) => element.id);
-      });
+  //   await relations
+  //     .reduce(async (previous, relation) => {
+  //       const result = await previous;
+  //       return [...result, await relationService.get(relation)];
+  //     }, Promise.resolve([]))
+  //     .then((elements) => {
+  //       relations = elements.map((element) => element.id);
+  //     });
 
-    return relations;
-  }
+  //   return relations;
+  // }
 
   public async getAll(): Promise<T[]> {
     let all: T[] = [];
 
     try {
-      const result = await this.context.items(this.typeName).readByQuery({
-        limit: -1,
-      });
-      all = result.data.map((element: T) => element);
+      const result = await client.request(readItems(this.typeName));
+      // const result = await this.context.items(this.typeName).readByQuery({
+      //   limit: -1,
+      // });
+      all = result.map((element: any) => element);
     } catch (e) {
       all = [];
     }
@@ -58,7 +69,8 @@ export default class SimpleDataService<T> {
     let element: any = {};
 
     try {
-      element = await this.context.items(this.typeName).readOne(id);
+      element = await client.request(readItem(this.typeName, id));
+      // element = await this.context.items(this.typeName).readOne(id);
     } catch (e) {
       console.log(e);
       return;
@@ -67,14 +79,15 @@ export default class SimpleDataService<T> {
     return element;
   }
 
-  public async getMany(ids: number[]): Promise<T[]> {
+  public async getMany(ids: number[]): Promise<any[]> {
     let elements: any = [];
 
     try {
       elements = ids.map(async (id) => {
         let element;
         try {
-          element = await this.context.items(this.typeName).readOne(id);
+          element = await client.request(readItem(this.typeName, id));
+          // element = await this.context.items(this.typeName).readOne(id);
         } catch (e) {
           element = {};
         }
@@ -87,11 +100,12 @@ export default class SimpleDataService<T> {
     return elements;
   }
 
-  public async add(element: T) {
+  public async add(element: any) {
     let addElement: any = {};
 
     try {
-      addElement = await this.context.items(this.typeName).createOne(element);
+      addElement = await client.request(createItem(this.typeName, element));
+      // addElement = await this.context.items(this.typeName).createOne(element);
     } catch (e) {
       console.log(e);
       return;
@@ -100,12 +114,13 @@ export default class SimpleDataService<T> {
     return addElement;
   }
 
-  public async addAll(all: T[]) {
+  public async addAll(all: any[]) {
     let addAll: T[] = [];
 
     try {
-      const result = await this.context.items(this.typeName).createMany(all);
-      addAll = result.data.map((element: T) => element);
+      const result = await client.request(createItems(this.typeName, all));
+      // const result = await this.context.items(this.typeName).createMany(all);
+      addAll = result.map((element: any) => element);
     } catch (e) {
       console.log(e);
       addAll = [];
@@ -118,9 +133,12 @@ export default class SimpleDataService<T> {
     let updateElement = {};
 
     try {
-      updateElement = await this.context
-        .items(this.typeName)
-        .updateOne(element.id, element);
+      updateElement = await client.request(
+        updateItem(this.typeName, element.id, element)
+      );
+      // updateElement = await this.context
+      //   .items(this.typeName)
+      //   .updateOne(element.id, element);
     } catch (e) {
       console.log(e);
       return;
@@ -133,9 +151,13 @@ export default class SimpleDataService<T> {
     let updateElement = {};
 
     try {
-      updateElement = await this.context
-        .items(this.typeName)
-        .updateOne(element[uniqueKey], element);
+      updateElement = await client.request(
+        updateItem(this.typeName, element[uniqueKey], element)
+      );
+
+      // updateElement = await this.context
+      //   .items(this.typeName)
+      //   .updateOne(element[uniqueKey], element);
     } catch (e) {
       console.log(e);
       return;
@@ -148,7 +170,8 @@ export default class SimpleDataService<T> {
     const deleteElement: any = element;
 
     try {
-      await this.context.items(this.typeName).deleteOne(element.id);
+      await client.request(deleteItem(this.typeName, element.id));
+      // await this.context.items(this.typeName).deleteOne(element.id);
     } catch (e) {
       console.log(e);
       return;
@@ -159,7 +182,8 @@ export default class SimpleDataService<T> {
 
   public async customDelete(element: any, uniqueKey: string) {
     try {
-      await this.context.items(this.typeName).deleteOne(element[uniqueKey]);
+      await client.request(deleteItem(this.typeName, element[uniqueKey]));
+      // await this.context.items(this.typeName).deleteOne(element[uniqueKey]);
     } catch (e) {
       console.log(e);
       return;
@@ -175,7 +199,9 @@ export default class SimpleDataService<T> {
       elements = ids.map(async (id) => {
         let element;
         try {
-          element = await this.context.items(this.typeName).deleteOne(id);
+          await client.request(deleteItem(this.typeName, id));
+
+          // element = await this.context.items(this.typeName).deleteOne(id);
         } catch (e) {
           console.log(e);
           element = {};
@@ -190,8 +216,11 @@ export default class SimpleDataService<T> {
   }
 
   public async readByQuery(query: any, limit = -1) {
-    return await this.context
-      .items(this.typeName)
-      .readByQuery({ ...query, limit: limit });
+    return await client.request(
+      readItems(this.typeName, { ...query, limit: limit })
+    );
+    // return await this.context
+    //   .items(this.typeName)
+    //   .readByQuery({ ...query, limit: limit });
   }
 }

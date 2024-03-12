@@ -1,22 +1,12 @@
 import { authentication, createDirectus, realtime, rest } from '@directus/sdk';
 import { exit } from 'process';
 import { APPCONFIGS } from '../configs';
-import { Image, Message, Permission, Role, User, Room } from '../models';
+import { Message, User, Room } from '../models';
 
 export interface Backend {
-  user: User;
-  message: Message;
-  room: Room;
-  directus_files: Image;
-  directus_permissions: Permission;
-  directus_roles: Role;
-
-  // Sensor: Sensor;
-  // SensorReading: SensorReading;
-  // User: User;
-  // UserPlan: UserPlan;
-  // orderGroup: OrderGroup;
-  // productOrder: ProductOrder;
+  user: User[];
+  message: Message[];
+  room: Room[];
 }
 console.log(APPCONFIGS.DIRECTUS.ENDPOINT);
 
@@ -47,4 +37,15 @@ export async function directus_start() {
   // await new Bootstrap().start();
 }
 
-export { createDirectus } from '@directus/sdk';
+export {
+  createDirectus,
+  readItem,
+  readItems,
+  DirectusClient,
+  createItem,
+  createItems,
+  updateItem,
+  updateItems,
+  deleteItem,
+  deleteItems,
+} from '@directus/sdk';
