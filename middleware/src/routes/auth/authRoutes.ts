@@ -10,7 +10,7 @@ export default class authRoutes {
   }
 
   protected registerRoutes(): void {
-    this.router.post('/signup', async (req, res, next) => {
+    this.router.post('/signup', async (req, res, _next) => {
       try {
         const userResponse = await new AuthController().signup(req.body);
         if (!userResponse.errorMessage) {
@@ -18,16 +18,16 @@ export default class authRoutes {
             .status(ResponseCode.HTTP_201_CREATED)
             .send(userResponse.data);
         }
-        res.status(userResponse.statusCode || 500).send({
+        return res.status(userResponse.statusCode || 500).send({
           error: userResponse.errorMessage,
         });
       } catch (error) {
-        res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
+        return res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
           error: 'An internal error occurs during the signing up.',
         });
       }
     });
-    this.router.post('/verify', async (req, res, next) => {
+    this.router.post('/verify', async (req, res, _next) => {
       try {
         const verification = await new AuthController().verifyEmail(req.body);
         if (!verification.errorMessage) {
@@ -35,33 +35,33 @@ export default class authRoutes {
             .status(ResponseCode.HTTP_201_CREATED)
             .send(verification.data);
         } else {
-          res.status(verification.statusCode || 401).send({
+          return res.status(verification.statusCode || 401).send({
             error: verification.errorMessage,
           });
         }
       } catch (error) {
-        res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
+        return res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
           error: 'An internal error occurs during verification code.',
         });
       }
     });
-    this.router.post('/signin', async (req, res, next) => {
+    this.router.post('/signin', async (req, res, _next) => {
       try {
         const userResponse = await new AuthController().signin(req.body);
         if (!userResponse.errorMessage) {
           return res.send(userResponse.data);
         }
-        res.status(userResponse.statusCode || 401).send({
+        return res.status(userResponse.statusCode || 401).send({
           error: userResponse.errorMessage,
         });
       } catch (error) {
         console.log(error);
-        res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
+        return res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
           error: 'Signin error, please try again',
         });
       }
     });
-    this.router.post('/resend-verification-code', async (req, res, next) => {
+    this.router.post('/resend-verification-code', async (req, res, _next) => {
       try {
         const result = await new AuthController().resendUserVerificationCode(
           req.body.email
@@ -69,35 +69,35 @@ export default class authRoutes {
         if (!result.errorMessage) {
           return res.send(result.data);
         } else {
-          res.status(result.statusCode || 401).send({
+          return res.status(result.statusCode || 401).send({
             error: result.errorMessage,
           });
         }
       } catch (error) {
         console.log(error);
-        res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
+        return res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
           error: 'An error occurs while resending verification code.',
         });
       }
     });
-    this.router.post('/forgot-password', async (req, res, next) => {
+    this.router.post('/forgot-password', async (req, res, _next) => {
       try {
         const result = await new AuthController().forgotPassword(req.body);
         if (!result.errorMessage) {
           return res.send(result.data);
         } else {
-          res.status(result.statusCode || 401).send({
+          return res.status(result.statusCode || 401).send({
             error: result.errorMessage,
           });
         }
       } catch (error) {
         console.log(error);
-        res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
+        return res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
           error: 'An internal error occurs.',
         });
       }
     });
-    this.router.post('/reset-password', async (req, res, next) => {
+    this.router.post('/reset-password', async (req, res, _next) => {
       try {
         const response = await new AuthController().resetPassword(req.body);
         if (response.errorMessage) {
@@ -105,14 +105,14 @@ export default class authRoutes {
             .status(response.statusCode || 401)
             .send({ error: response.errorMessage });
         }
-        res.send(response.data);
+        return res.send(response.data);
       } catch (error) {
-        res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
+        return res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
           error: 'An error occurred while trying to reset your password',
         });
       }
     });
-    this.router.post('/update-password', async (req, res, next) => {
+    this.router.post('/update-password', async (req, res, _next) => {
       try {
         const data = {
           currentPassword: req.body.currentPassword,
@@ -125,9 +125,9 @@ export default class authRoutes {
             .status(response.statusCode || 401)
             .send({ error: response.errorMessage });
         }
-        res.send(response.data);
+        return res.send(response.data);
       } catch (error) {
-        res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
+        return res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
           error: 'Error updating password, please try again',
         });
       }

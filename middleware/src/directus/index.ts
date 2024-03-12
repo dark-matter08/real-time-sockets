@@ -11,4 +11,8 @@ export {
   updateItems,
   deleteItem,
   deleteItems,
+  BackendKeys,
+  AuthenticationClient,
+  RestClient,
+  WebSocketClient,
 } from './directus';

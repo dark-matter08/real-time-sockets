@@ -1,5 +1,5 @@
 import {
-  Backend,
+  // Backend,
   DirectusClient,
   client,
   createItem,
@@ -8,11 +8,17 @@ import {
   readItem,
   readItems,
   updateItem,
+  AuthenticationClient,
+  RestClient,
+  WebSocketClient,
 } from '../../directus';
 
 export default class SimpleDataService<T> {
   typeName: string;
-  context: DirectusClient<Backend>;
+  context: DirectusClient<any> &
+    RestClient<any> &
+    AuthenticationClient<any> &
+    WebSocketClient<any>;
 
   constructor(typeName: string) {
     this.typeName = typeName;
@@ -51,9 +57,12 @@ export default class SimpleDataService<T> {
 
   public async getAll(): Promise<T[]> {
     let all: T[] = [];
+    // const name
 
     try {
-      const result = await client.request(readItems(this.typeName));
+      const result = await this.context.request(
+        readItems(this.typeName as any)
+      );
       // const result = await this.context.items(this.typeName).readByQuery({
       //   limit: -1,
       // });
@@ -69,7 +78,7 @@ export default class SimpleDataService<T> {
     let element: any = {};
 
     try {
-      element = await client.request(readItem(this.typeName, id));
+      element = await this.context.request(readItem(this.typeName as any, id));
       // element = await this.context.items(this.typeName).readOne(id);
     } catch (e) {
       console.log(e);
@@ -86,7 +95,9 @@ export default class SimpleDataService<T> {
       elements = ids.map(async (id) => {
         let element;
         try {
-          element = await client.request(readItem(this.typeName, id));
+          element = await this.context.request(
+            readItem(this.typeName as any, id)
+          );
           // element = await this.context.items(this.typeName).readOne(id);
         } catch (e) {
           element = {};
@@ -104,7 +115,9 @@ export default class SimpleDataService<T> {
     let addElement: any = {};
 
     try {
-      addElement = await client.request(createItem(this.typeName, element));
+      addElement = await this.context.request(
+        createItem(this.typeName, element)
+      );
       // addElement = await this.context.items(this.typeName).createOne(element);
     } catch (e) {
       console.log(e);
@@ -118,7 +131,9 @@ export default class SimpleDataService<T> {
     let addAll: T[] = [];
 
     try {
-      const result = await client.request(createItems(this.typeName, all));
+      const result = await this.context.request(
+        createItems(this.typeName, all)
+      );
       // const result = await this.context.items(this.typeName).createMany(all);
       addAll = result.map((element: any) => element);
     } catch (e) {
@@ -133,7 +148,7 @@ export default class SimpleDataService<T> {
     let updateElement = {};
 
     try {
-      updateElement = await client.request(
+      updateElement = await this.context.request(
         updateItem(this.typeName, element.id, element)
       );
       // updateElement = await this.context
@@ -151,7 +166,7 @@ export default class SimpleDataService<T> {
     let updateElement = {};
 
     try {
-      updateElement = await client.request(
+      updateElement = await this.context.request(
         updateItem(this.typeName, element[uniqueKey], element)
       );
 
@@ -167,10 +182,10 @@ export default class SimpleDataService<T> {
   }
 
   public async delete(element: any) {
-    const deleteElement: any = element;
+    // const deleteElement: any = element;
 
     try {
-      await client.request(deleteItem(this.typeName, element.id));
+      await this.context.request(deleteItem(this.typeName, element.id));
       // await this.context.items(this.typeName).deleteOne(element.id);
     } catch (e) {
       console.log(e);
@@ -182,7 +197,7 @@ export default class SimpleDataService<T> {
 
   public async customDelete(element: any, uniqueKey: string) {
     try {
-      await client.request(deleteItem(this.typeName, element[uniqueKey]));
+      await this.context.request(deleteItem(this.typeName, element[uniqueKey]));
       // await this.context.items(this.typeName).deleteOne(element[uniqueKey]);
     } catch (e) {
       console.log(e);
@@ -199,7 +214,7 @@ export default class SimpleDataService<T> {
       elements = ids.map(async (id) => {
         let element;
         try {
-          await client.request(deleteItem(this.typeName, id));
+          await this.context.request(deleteItem(this.typeName, id));
 
           // element = await this.context.items(this.typeName).deleteOne(id);
         } catch (e) {
@@ -215,12 +230,14 @@ export default class SimpleDataService<T> {
     return elements;
   }
 
-  public async readByQuery(query: any, limit = -1) {
-    return await client.request(
-      readItems(this.typeName, { ...query, limit: limit })
+  public async readByQuery(query: any, limit = -1): Promise<any[]> {
+    const result = await this.context.request(
+      readItems(this.typeName as any, { ...query, limit: limit })
     );
     // return await this.context
     //   .items(this.typeName)
     //   .readByQuery({ ...query, limit: limit });
+
+    return result;
   }
 }

@@ -8,9 +8,12 @@ export interface Backend {
   message: Message[];
   room: Room[];
 }
-console.log(APPCONFIGS.DIRECTUS.ENDPOINT);
 
-export const client = createDirectus(APPCONFIGS.DIRECTUS.ENDPOINT as string)
+export type BackendKeys = keyof Backend;
+
+export const client = createDirectus<Backend>(
+  APPCONFIGS.DIRECTUS.ENDPOINT as string
+)
   .with(rest())
   .with(authentication('json'))
   .with(realtime());
@@ -48,4 +51,7 @@ export {
   updateItems,
   deleteItem,
   deleteItems,
+  AuthenticationClient,
+  RestClient,
+  WebSocketClient,
 } from '@directus/sdk';

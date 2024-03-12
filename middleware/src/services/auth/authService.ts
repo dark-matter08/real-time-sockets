@@ -6,7 +6,7 @@ import { SimpleDataService } from '../utils';
 import { MailService, ResponseCode, ServiceResponse, Utils } from '../../utils';
 import { User } from '../../models';
 import { Liquid } from 'liquidjs';
-import axios from 'axios';
+// import axios from 'axios';
 
 const engine = new Liquid({
   root: '/app/src/static/templates',
@@ -137,7 +137,7 @@ export default class AuthService {
       limit: -1,
     });
 
-    return user.data.length > 0 ? user.data[0] : undefined;
+    return user.length > 0 ? user[0] : undefined;
   }
 
   public async verifyEmail(data: {
@@ -153,7 +153,7 @@ export default class AuthService {
       };
     }
 
-    if (user?.is_verified) {
+    if (user['is_verified']) {
       return {
         errorMessage: 'This account has already been verified',
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -163,13 +163,13 @@ export default class AuthService {
     try {
       const equal = this.comparePassword(
         data.verification_code,
-        user?.verification_code
+        user['verification_code']
       );
 
       console.log(equal);
 
       if (equal) {
-        user.is_verified = true;
+        user['is_verified'] = true;
         const updateUser = await new SimpleDataService<User>('User').update(
           user
         );
@@ -208,21 +208,21 @@ export default class AuthService {
       };
     }
 
-    if (user.is_google_auth) {
-      return {
-        errorMessage: 'This email was registered with google authentication',
-        statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
-      };
-    }
+    // if (user.is_google_auth) {
+    //   return {
+    //     errorMessage: 'This email was registered with google authentication',
+    //     statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+    //   };
+    // }
 
-    if (user.is_apple_auth) {
-      return {
-        errorMessage: 'This email was registered with apple authentication',
-        statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
-      };
-    }
+    // if (user.is_apple_auth) {
+    //   return {
+    //     errorMessage: 'This email was registered with apple authentication',
+    //     statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+    //   };
+    // }
 
-    const equal = this.comparePassword(data.password, user.password);
+    const equal = this.comparePassword(data.password, user['password']);
     console.log(equal);
 
     if (!equal) {
@@ -232,7 +232,7 @@ export default class AuthService {
       };
     }
 
-    let currentDevices = user.devices;
+    let currentDevices = user['devices'];
     let newDevicesList;
 
     if (!currentDevices) {
@@ -253,7 +253,7 @@ export default class AuthService {
       }
     }
 
-    user.devices = newDevicesList;
+    user['devices'] = newDevicesList;
 
     const new_user = await new SimpleDataService<User>('User').update(user);
 
@@ -264,7 +264,7 @@ export default class AuthService {
       };
     }
 
-    const tokenObj = this.createAuthToken(user.email);
+    const tokenObj = this.createAuthToken(user['email']);
     return {
       data: {
         user: new_user,
@@ -319,8 +319,8 @@ export default class AuthService {
 
     let updatedUser: User;
 
-    user.verification_code = signedCode;
-    user.is_verified = false;
+    user['verification_code'] = signedCode;
+    user['is_verified'] = false;
 
     try {
       updatedUser = await new SimpleDataService<User>('User').update(user);
@@ -429,7 +429,7 @@ export default class AuthService {
       };
     }
 
-    if (!user.is_verified) {
+    if (!user['is_verified']) {
       return {
         errorMessage: 'User email has not been verified',
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -438,9 +438,9 @@ export default class AuthService {
 
     const hashedPassword = this.hashPassword(data.password);
 
-    user.password = hashedPassword;
+    user['password'] = hashedPassword;
 
-    const tokenObj = this.createAuthToken(user.email);
+    const tokenObj = this.createAuthToken(user['email']);
 
     const userData = await new SimpleDataService<User>('User').update(user);
 
@@ -462,7 +462,14 @@ export default class AuthService {
 
     const user = await this.getUserByEmail(email);
 
-    if (!this.comparePassword(currentPassword, user.password)) {
+    if (!user) {
+      return {
+        statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+        errorMessage: 'User with the email not found',
+      };
+    }
+
+    if (!this.comparePassword(currentPassword, user?.['password'])) {
       return {
         errorMessage: 'your current password is incorrect',
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -471,9 +478,9 @@ export default class AuthService {
 
     const hashedPassword = this.hashPassword(newPassword);
 
-    user.password = hashedPassword;
+    user['password'] = hashedPassword;
 
-    const tokenObj = this.createAuthToken(user.email);
+    const tokenObj = this.createAuthToken(user?.['email']);
 
     const userData = await new SimpleDataService<User>('User').update(user);
 

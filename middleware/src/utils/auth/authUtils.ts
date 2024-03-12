@@ -19,8 +19,8 @@ export default class AuthUtils {
 		} else {
 			const bearerToken = request.headers.authorization.split("Bearer ")[1];
 			try {
-				const result = new AuthService().decodeToken(bearerToken);
-				response.locals.email = result["email"];
+				const result = new AuthService().decodeToken(bearerToken as string);
+				response.locals['email'] = result["email"];
 				next();
 			} catch (err) {
 				response.status(ResponseCode.HTTP_401_UNAUTHORIZED).send({ error: `rejected token: ${bearerToken}` });

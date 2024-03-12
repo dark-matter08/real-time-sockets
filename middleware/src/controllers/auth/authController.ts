@@ -1,9 +1,9 @@
 /* eslint-disable indent */
 import { AuthService } from '../../services';
-import { ResponseCode, ServiceResponse } from '../../utils';
-import { Body, Example, Post, Route, Tags } from 'tsoa';
-import { APPCONFIGS } from '../../configs';
-import { User } from '../../models';
+import { ServiceResponse } from '../../utils';
+import { Body, Post, Route, Tags } from 'tsoa';
+// import { APPCONFIGS } from '../../configs';
+// import { User } from '../../models';
 
 @Route('/api/auth')
 @Tags('Auth Controller')
