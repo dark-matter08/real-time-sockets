@@ -22,8 +22,8 @@ export default interface Message {
   content: string;
   media?: string[] | Image[];
   timestamp: Date;
-  isRead?: boolean;
-  isReceived?: boolean;
-  isDeleted?: boolean;
+  is_read?: boolean;
+  is_received?: boolean;
+  is_deleted?: boolean;
   room?: Room | number;
 }

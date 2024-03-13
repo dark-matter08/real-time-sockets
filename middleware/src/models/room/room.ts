@@ -13,5 +13,5 @@ export default interface Room {
   id?: number;
   members?: User[] | number[];
   name?: string;
-  dateCreated?: Date;
+  date_created?: Date;
 }

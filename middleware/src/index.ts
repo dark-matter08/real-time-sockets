@@ -4,6 +4,7 @@ import { APPCONFIGS } from './configs';
 import routes from './routes';
 import cors from 'cors';
 import { directus_start } from './directus';
+import morgan from 'morgan';
 class Server {
   public app: express.Application;
 
@@ -23,6 +24,7 @@ class Server {
     this.app.set('port', APPCONFIGS.PORT);
     this.app.use(express.json());
     this.app.use(express.static('public'));
+    this.app.use(morgan('tiny'));
 
     this.app.use(
       '/docs',

@@ -22,6 +22,8 @@ export default class authRoutes {
           error: userResponse.errorMessage,
         });
       } catch (error) {
+        console.log(error);
+
         return res.status(ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR).send({
           error: 'An internal error occurs during the signing up.',
         });

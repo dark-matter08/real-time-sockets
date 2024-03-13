@@ -24,7 +24,7 @@ export default interface User {
   name?: string;
   password?: string;
   phone?: string;
-  profilePicture?: Image;
+  profile_photo?: Image;
   verification_code?: string;
   website?: string;
 }

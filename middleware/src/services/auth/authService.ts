@@ -59,6 +59,8 @@ export default class AuthService {
     const { email, password } = data;
     const userByEmail = await this.getUserByEmail(email);
 
+    console.log(userByEmail);
+
     if (userByEmail) {
       return {
         errorMessage: 'There is already a user with this email',
@@ -136,6 +138,10 @@ export default class AuthService {
 
       limit: -1,
     });
+
+    if (!user) {
+      return null;
+    }
 
     return user.length > 0 ? user[0] : undefined;
   }
