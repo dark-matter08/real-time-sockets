@@ -10,7 +10,7 @@ import { Body, Post, Route, Tags } from 'tsoa';
 export default class AuthController {
   @Post('/signup')
   public async signup(
-    @Body() data: { email: string; password: string }
+    @Body() data: { email: string; password: string; name: string }
   ): Promise<ServiceResponse> {
     return new AuthService().signUp(data);
   }

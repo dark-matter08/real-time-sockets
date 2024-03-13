@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTS</title>
+    
+  </head>
+
+  <body style="background-color:rgba(30, 30, 235, 0.048); height: 100%; padding-top: 20px">
+
+    <div id="email"
+        style="width: 600px; margin-left: auto; margin-right: auto; background:white; border-radius: 32px;">
+        <table style="width: 600px">
+          <tr>
+            <table style="padding-left: 32px; padding-right: 32px; padding-top: 37px; margin-bottom: 37px">
+              {% include 'header' %}
+              {% block content %}{{ html }}
+              {% endblock %}
+            </table>
+          </tr>
+          {% include 'footer' %}
+        </table>
+    </div>
+  </body>
+</html>

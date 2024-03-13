@@ -18,6 +18,15 @@ services:
       DIRECUTS_TOKEN: 'XXX'
       DIRECTUS_USER: 'admin@example.com'
       DIRECTUS_PASSWORD: 'd1r3ctu5'
+      JWT_SECRET: 'this-may-change'
+      SESSION_SECRET: 'hallal-change'
+      EMAIL_SMTP_HOST: smtp.gmail.com
+      EMAIL_SMTP_PORT: 465
+      EMAIL_SMTP_USER: ntopor.inc@gmail.com
+      EMAIL_SMTP_PASSWORD: ayzropyditaaiexj
+      EMAIL_SMTP_SECURE: true
+      EMAIL_OTP_SUBJECT: 'RTS OTP'
+      EMAIL_FROM: ntopor.inc@gmail.com
     ports:
       - 8000:8000
     stdin_open: true

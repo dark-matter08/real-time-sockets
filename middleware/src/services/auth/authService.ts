@@ -55,11 +55,10 @@ export default class AuthService {
   public async signUp(data: {
     email: string;
     password: string;
+    name: string;
   }): Promise<ServiceResponse> {
-    const { email, password } = data;
+    const { email, password, name } = data;
     const userByEmail = await this.getUserByEmail(email);
-
-    console.log(userByEmail);
 
     if (userByEmail) {
       return {
@@ -86,19 +85,16 @@ export default class AuthService {
       };
     }
 
-    // Sends User verification mail
-    const text: string = await engine.renderFile('account-verification', {
-      otpcode: code,
-    });
+    const message = 'Your one time pass code (otp) is: ' + code + ', Thank you';
 
-    const mailResult = await new MailService().sendMail(
+    const mailService = new MailService();
+    const mailResult = await mailService.sendMail(
       email,
       APPCONFIGS.MAIL.OTP_SUBJECT as string,
-      text
+      message
     );
 
-    if (!mailResult?.sent === false) {
-      console.log(mailResult.error);
+    if (!mailResult || mailResult?.sent === false) {
       return {
         errorMessage:
           'Error sending verification email, please try again later',
@@ -110,9 +106,10 @@ export default class AuthService {
     userObject.password = hashedPassword;
     userObject.is_verified = false;
     userObject.verification_code = signedCode;
+    userObject.name = name;
 
     try {
-      const userData = await new SimpleDataService<User>('User').add(
+      const userData = await new SimpleDataService<User>('Users').add(
         userObject
       );
       return {
@@ -131,7 +128,7 @@ export default class AuthService {
   }
 
   public async getUserByEmail(email: string) {
-    const user = await new SimpleDataService<User>('User').readByQuery({
+    const user = await new SimpleDataService<User>('Users').readByQuery({
       filter: {
         email: { _eq: email },
       },
@@ -172,11 +169,9 @@ export default class AuthService {
         user['verification_code']
       );
 
-      console.log(equal);
-
       if (equal) {
         user['is_verified'] = true;
-        const updateUser = await new SimpleDataService<User>('User').update(
+        const updateUser = await new SimpleDataService<User>('Users').update(
           user
         );
 
@@ -261,7 +256,7 @@ export default class AuthService {
 
     user['devices'] = newDevicesList;
 
-    const new_user = await new SimpleDataService<User>('User').update(user);
+    const new_user = await new SimpleDataService<User>('Users').update(user);
 
     if (!user) {
       return {
@@ -329,7 +324,7 @@ export default class AuthService {
     user['is_verified'] = false;
 
     try {
-      updatedUser = await new SimpleDataService<User>('User').update(user);
+      updatedUser = await new SimpleDataService<User>('Users').update(user);
 
       if (!updatedUser) {
         return {
@@ -381,15 +376,21 @@ export default class AuthService {
         statusCode: ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR,
       };
     }
-    // Sends User verification mail
-    const text: string = await engine.renderFile('account-verification', {
-      otpcode: code,
-    });
+
+    const message = 'Your one time pass code (otp) is: ' + code + ', Thank you';
+    // // Sends User verification mail
+    // const text: string = await engine.renderFile('account-verification', {
+    //   otpcode: code,
+    // });
+
+    // const text: string = await engine.renderFile('account-verification', {
+    //   otpcode: code,
+    // });
 
     const mailResult = await new MailService().sendMail(
       email,
       APPCONFIGS.MAIL.OTP_SUBJECT as string,
-      text
+      message
     );
 
     if (!mailResult?.sent === false) {
@@ -402,7 +403,7 @@ export default class AuthService {
     }
 
     user.verification_code = signedCode;
-    const updatedUser = await new SimpleDataService<User>('User').update(user);
+    const updatedUser = await new SimpleDataService<User>('Users').update(user);
 
     try {
       if (!updatedUser) {
@@ -448,7 +449,7 @@ export default class AuthService {
 
     const tokenObj = this.createAuthToken(user['email']);
 
-    const userData = await new SimpleDataService<User>('User').update(user);
+    const userData = await new SimpleDataService<User>('Users').update(user);
 
     return {
       data: {
@@ -488,7 +489,7 @@ export default class AuthService {
 
     const tokenObj = this.createAuthToken(user?.['email']);
 
-    const userData = await new SimpleDataService<User>('User').update(user);
+    const userData = await new SimpleDataService<User>('Users').update(user);
 
     return {
       data: {

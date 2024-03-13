@@ -4,7 +4,7 @@ import { APPCONFIGS } from '../configs';
 import { Message, User, Room } from '../models';
 
 export interface Backend {
-  user: User[];
+  users: User[];
   message: Message[];
   room: Room[];
 }
@@ -21,6 +21,8 @@ export const client = createDirectus<Backend>(
 export async function directus_start() {
   let authenticated = false;
 
+  // const result = await client.request(readItems('users'));
+  // console.log(result);
   while (!authenticated) {
     const email = APPCONFIGS.DIRECTUS.USER ?? '';
     const password = APPCONFIGS.DIRECTUS.PASSWORD ?? '';

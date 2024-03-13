@@ -1,0 +1,61 @@
+{% layout "base" %}
+{% block content %}
+
+  <!-- Hello greeting here -->
+  <tr style="padding: 0;">
+    <td style="padding: 0; font-family: 'Roboto'; font-weight: 600; font-size: 18px; color: rgba(26, 27, 48, 0.85); ">
+      <p style="margin-top: 34px; margin-bottom: 16px;">Hello,</p>
+    </td>
+  </tr>
+
+  <!-- body first text -->
+  <tr style="padding: 0;">
+    <td style="margin: 0; padding: 0;">
+      <p style="margin: 0; font-family: 'OpenSans', 'sans-serif'; font-weight: 400; font-size: 14px; color: rgba(26, 27, 48, 0.85);">
+        You have recently registered with RTS. In order to be able to use your account, we ask you
+        to verify your identity.
+      </p>
+    </td>
+  </tr>
+
+  <!-- please enter code -->
+  <tr style="padding: 0;">
+    <td style="padding: 0;">
+      <p style="font-family: 'OpenSans', 'sans-serif'; font-weight: 400; font-size: 14px; color: rgba(26, 27, 48, 0.85); margin-top: 20px; height: 40px;">
+        Please enter the following code in our app</p>
+    </td>
+  </tr>
+
+  <!-- code display -->
+
+  <tr style="padding: 0;">
+    <td style="padding: 0;">
+      <p style="margin: 0; height: 45px;  font-family: 'Roboto', 'sans-serif'; font-weight: 900; font-size: 30px; color: #2a297d;">
+        {{ otpcode }}</p>
+    </td>
+  </tr>
+
+  <!-- text below -->
+
+  <tr style="padding: 0;">
+    <td style="padding: 0;">
+      <p style="margin: 0; font-family: 'OpenSans', 'sans-serif'; font-weight: 400; font-size: 14px; color: rgba(26, 27, 48, 0.85);">
+        Please note, this verification code will expire in 24 hours.
+        If you have not asked for a verification code or if you have any further questions, please send us an e-mail to
+        <a style="font-weight: bold; text-decoration: none; color: rgba(26, 27, 48, 0.85);" href="mailto:info@RTS.eu">
+          <span>info@RTS.eu</span>
+        </a>
+      </p>
+    </td>
+  </tr>
+
+  <!-- thank you -->
+
+  <tr style="padding: 0;">
+    <td style="padding: 0;">
+      <p style="margin: 0; margin-top: 10px; font-family: 'OpenSans', 'sans-serif'; font-weight: 400; font-size: 14px; color: rgba(26, 27, 48, 0.85);">
+        Thank you for choosing RTS.</p>
+    </td>
+  </tr>
+
+{% endblock %}

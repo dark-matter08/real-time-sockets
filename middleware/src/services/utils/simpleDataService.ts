@@ -231,22 +231,10 @@ export default class SimpleDataService<T> {
   }
 
   public async readByQuery(query: any, limit = -1): Promise<any[] | undefined> {
-    console.log(client);
+    const result = await client.request(
+      readItems(this.typeName as any, { ...query, limit: limit })
+    );
 
-    try {
-      const result = await client.request(
-        readItems(this.typeName as any, { ...query, limit: limit })
-      );
-      // return await this.context
-      //   .items(this.typeName)
-      //   .readByQuery({ ...query, limit: limit });
-
-      console.log(result);
-
-      return result;
-    } catch (error) {
-      console.log('hahhhh');
-      return undefined;
-    }
+    return result;
   }
 }
