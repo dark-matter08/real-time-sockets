@@ -12,7 +12,7 @@ export default class AuthUtils {
 	 */
 	public async verifyLoggedInUser(request: Request, response: Response, next: NextFunction): Promise<void> {
 		const pathFragment = "/webhook";
-		// Execepts webhook endpoints.
+		// Except webhook endpoints.
 		if (request.path.includes(pathFragment)) return next();
 		if (!request.headers.authorization) {
 			response.status(ResponseCode.HTTP_401_UNAUTHORIZED).send({ error: "Unauthorized, token missing" });

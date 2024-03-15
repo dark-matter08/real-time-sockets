@@ -3,7 +3,7 @@ import { Health } from "../../models";
 import { HealthService } from "../../services";
 
 
-@Route("/api/")
+@Route("/api")
 @Tags("Health Controller Operations")
 export default class HealthController {
 	/**

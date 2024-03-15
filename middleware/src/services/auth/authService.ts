@@ -13,6 +13,16 @@ const engine = new Liquid({
   extname: '.liquid',
 });
 export default class AuthService {
+  private userDataService: SimpleDataService<User>;
+  private mailService: MailService;
+  private utilsService: Utils;
+
+  constructor() {
+    this.userDataService = new SimpleDataService<User>('Users');
+    this.mailService = new MailService();
+    this.utilsService = new Utils();
+  }
+
   private signToken(email: string) {
     return jwt.sign({ email: email }, APPCONFIGS.JWT.SECRET, {
       expiresIn: APPCONFIGS.JWT.EXPIRATION,
@@ -73,7 +83,7 @@ export default class AuthService {
 
     let code: any, signedCode: any;
     try {
-      const result = await new Utils().generateOTP(5);
+      const result = await this.utilsService.generateOTP(5);
       code = result.code;
       signedCode = result.signedCode;
     } catch (error) {
@@ -87,8 +97,7 @@ export default class AuthService {
 
     const message = 'Your one time pass code (otp) is: ' + code + ', Thank you';
 
-    const mailService = new MailService();
-    const mailResult = await mailService.sendMail(
+    const mailResult = await this.mailService.sendMail(
       email,
       APPCONFIGS.MAIL.OTP_SUBJECT as string,
       message
@@ -109,9 +118,7 @@ export default class AuthService {
     userObject.name = name;
 
     try {
-      const userData = await new SimpleDataService<User>('Users').add(
-        userObject
-      );
+      const userData = await this.userDataService.add(userObject);
       return {
         data: {
           user: userData,
@@ -128,9 +135,25 @@ export default class AuthService {
   }
 
   public async getUserByEmail(email: string) {
-    const user = await new SimpleDataService<User>('Users').readByQuery({
+    const user = await this.userDataService.readByQuery({
       filter: {
         email: { _eq: email },
+      },
+
+      limit: -1,
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return user.length > 0 ? user[0] : undefined;
+  }
+
+  public async getUserById(id: number) {
+    const user = await this.userDataService.readByQuery({
+      filter: {
+        id: { _eq: id },
       },
 
       limit: -1,
@@ -171,9 +194,7 @@ export default class AuthService {
 
       if (equal) {
         user['is_verified'] = true;
-        const updateUser = await new SimpleDataService<User>('Users').update(
-          user
-        );
+        const updateUser = await this.userDataService.update(user);
 
         return {
           data: {
@@ -256,7 +277,7 @@ export default class AuthService {
 
     user['devices'] = newDevicesList;
 
-    const new_user = await new SimpleDataService<User>('Users').update(user);
+    const new_user = await this.userDataService.update(user);
 
     if (!user) {
       return {
@@ -286,7 +307,7 @@ export default class AuthService {
 
     let code: any, signedCode: any;
     try {
-      const result = await new Utils().generateOTP(5);
+      const result = await this.utilsService.generateOTP(5);
       code = result.code;
       signedCode = result.signedCode;
     } catch (error) {
@@ -303,7 +324,7 @@ export default class AuthService {
       otpcode: code,
     });
 
-    const mailResult = await new MailService().sendMail(
+    const mailResult = await this.mailService.sendMail(
       email,
       APPCONFIGS.MAIL.OTP_SUBJECT as string,
       text
@@ -324,7 +345,7 @@ export default class AuthService {
     user['is_verified'] = false;
 
     try {
-      updatedUser = await new SimpleDataService<User>('Users').update(user);
+      updatedUser = await this.userDataService.update(user);
 
       if (!updatedUser) {
         return {
@@ -365,7 +386,7 @@ export default class AuthService {
 
     let code: any, signedCode: any;
     try {
-      const result = await new Utils().generateOTP(5);
+      const result = await this.utilsService.generateOTP(5);
       code = result.code;
       signedCode = result.signedCode;
     } catch (error) {
@@ -387,7 +408,7 @@ export default class AuthService {
     //   otpcode: code,
     // });
 
-    const mailResult = await new MailService().sendMail(
+    const mailResult = await this.mailService.sendMail(
       email,
       APPCONFIGS.MAIL.OTP_SUBJECT as string,
       message
@@ -403,7 +424,7 @@ export default class AuthService {
     }
 
     user.verification_code = signedCode;
-    const updatedUser = await new SimpleDataService<User>('Users').update(user);
+    const updatedUser = await this.userDataService.update(user);
 
     try {
       if (!updatedUser) {
@@ -449,7 +470,7 @@ export default class AuthService {
 
     const tokenObj = this.createAuthToken(user['email']);
 
-    const userData = await new SimpleDataService<User>('Users').update(user);
+    const userData = await this.userDataService.update(user);
 
     return {
       data: {
@@ -489,7 +510,7 @@ export default class AuthService {
 
     const tokenObj = this.createAuthToken(user?.['email']);
 
-    const userData = await new SimpleDataService<User>('Users').update(user);
+    const userData = await this.userDataService.update(user);
 
     return {
       data: {

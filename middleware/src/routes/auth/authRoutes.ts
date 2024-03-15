@@ -3,16 +3,18 @@ import { AuthController } from '../../controllers';
 import { ResponseCode } from '../../utils';
 export default class authRoutes {
   public router: express.Router;
+  private authController: AuthController;
 
   constructor() {
     this.router = express.Router();
     this.registerRoutes();
+    this.authController = new AuthController();
   }
 
   protected registerRoutes(): void {
     this.router.post('/signup', async (req, res, _next) => {
       try {
-        const userResponse = await new AuthController().signup(req.body);
+        const userResponse = await this.authController.signup(req.body);
         if (!userResponse.errorMessage) {
           return res
             .status(ResponseCode.HTTP_201_CREATED)
@@ -31,7 +33,7 @@ export default class authRoutes {
     });
     this.router.post('/verify', async (req, res, _next) => {
       try {
-        const verification = await new AuthController().verifyEmail(req.body);
+        const verification = await this.authController.verifyEmail(req.body);
         if (!verification.errorMessage) {
           return res
             .status(ResponseCode.HTTP_201_CREATED)
@@ -49,7 +51,7 @@ export default class authRoutes {
     });
     this.router.post('/signin', async (req, res, _next) => {
       try {
-        const userResponse = await new AuthController().signin(req.body);
+        const userResponse = await this.authController.signin(req.body);
         if (!userResponse.errorMessage) {
           return res.send(userResponse.data);
         }
@@ -65,7 +67,7 @@ export default class authRoutes {
     });
     this.router.post('/resend-verification-code', async (req, res, _next) => {
       try {
-        const result = await new AuthController().resendUserVerificationCode(
+        const result = await this.authController.resendUserVerificationCode(
           req.body.email
         );
         if (!result.errorMessage) {
@@ -84,7 +86,7 @@ export default class authRoutes {
     });
     this.router.post('/forgot-password', async (req, res, _next) => {
       try {
-        const result = await new AuthController().forgotPassword(req.body);
+        const result = await this.authController.forgotPassword(req.body);
         if (!result.errorMessage) {
           return res.send(result.data);
         } else {
@@ -101,7 +103,7 @@ export default class authRoutes {
     });
     this.router.post('/reset-password', async (req, res, _next) => {
       try {
-        const response = await new AuthController().resetPassword(req.body);
+        const response = await this.authController.resetPassword(req.body);
         if (response.errorMessage) {
           return res
             .status(response.statusCode || 401)
@@ -121,7 +123,7 @@ export default class authRoutes {
           email: req.body.email,
           newPassword: req.body.newPassword,
         };
-        const response = await new AuthController().updatePassword(data);
+        const response = await this.authController.updatePassword(data);
         if (response.errorMessage) {
           return res
             .status(response.statusCode || 401)

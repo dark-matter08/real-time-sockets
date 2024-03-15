@@ -8,35 +8,41 @@ import { Body, Post, Route, Tags } from 'tsoa';
 @Route('/api/auth')
 @Tags('Auth Controller')
 export default class AuthController {
+  private authService: AuthService;
+
+  constructor() {
+    this.authService = new AuthService();
+  }
+
   @Post('/signup')
   public async signup(
     @Body() data: { email: string; password: string; name: string }
   ): Promise<ServiceResponse> {
-    return new AuthService().signUp(data);
+    return this.authService.signUp(data);
   }
   @Post('/verify')
   public async verifyEmail(
     @Body() data: { email: string; verification_code: string }
   ): Promise<ServiceResponse> {
-    return new AuthService().verifyEmail(data);
+    return this.authService.verifyEmail(data);
   }
   @Post('/signin')
   public async signin(
     @Body() data: { deviceToken?: string; email: string; password: string }
   ): Promise<ServiceResponse> {
-    return new AuthService().signIn(data);
+    return this.authService.signIn(data);
   }
   @Post('/forgot-password')
   public async forgotPassword(
     @Body() data: { email: string }
   ): Promise<ServiceResponse> {
-    return new AuthService().forgotPassword(data.email);
+    return this.authService.forgotPassword(data.email);
   }
   @Post('/resend-verification-code')
   public async resendUserVerificationCode(
     @Body() email: string
   ): Promise<ServiceResponse> {
-    return new AuthService().resendUserVerificationCode(email);
+    return this.authService.resendUserVerificationCode(email);
   }
   @Post('/reset-password')
   public async resetPassword(
@@ -46,7 +52,7 @@ export default class AuthController {
       password: string;
     }
   ): Promise<ServiceResponse> {
-    return new AuthService().resetPassword(data);
+    return this.authService.resetPassword(data);
   }
   @Post('/update-password')
   public async updatePassword(
@@ -57,6 +63,6 @@ export default class AuthController {
       newPassword: string;
     }
   ): Promise<ServiceResponse> {
-    return new AuthService().updatePassword(data);
+    return this.authService.updatePassword(data);
   }
 }
