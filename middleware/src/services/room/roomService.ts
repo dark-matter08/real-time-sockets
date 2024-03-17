@@ -7,37 +7,37 @@ export default class RoomService {
     private authService: AuthService
     private roomDataService: SimpleDataService<Room>
     private messageDataService: SimpleDataService<Message>
-    
-    constructor(){
+
+    constructor() {
         this.authService = new AuthService()
-        this.roomDataService =  new SimpleDataService<Room>('Room')
-        this.messageDataService =  new SimpleDataService<Message>('Message')
+        this.roomDataService = new SimpleDataService<Room>('Room')
+        this.messageDataService = new SimpleDataService<Message>('Message')
     }
 
-    private async getRoomById(roomId: number): Promise<Room | undefined> {
+    public async getRoomById(roomId: number): Promise<Room | undefined> {
         const room = await this.roomDataService.readByQuery({
             filter: {
-              id: { _eq: roomId },
+                id: { _eq: roomId },
             },
-      
+
             limit: -1,
-          });
-      
-          if (!room) {
+        });
+
+        if (!room) {
             return undefined;
-          }
-      
-          return room.length > 0 ? room[0] : undefined;
+        }
+
+        return room.length > 0 ? room[0] : undefined;
     }
 
-	public async getHealth(): Promise<Health> {
-		return {
-			message: "pong"
-		};
-	}
+    public async getHealth(): Promise<Health> {
+        return {
+            message: "pong"
+        };
+    }
 
-    public async createRoom(data: {name: string, userId: number}): Promise<ServiceResponse> {
-        const {name, userId} = data
+    public async createRoom(data: { name: string, userId: number }): Promise<ServiceResponse> {
+        const { name, userId } = data
 
         const user = await this.authService.getUserById(userId);
 
@@ -61,12 +61,12 @@ export default class RoomService {
                 room: newRoom,
             },
         };
-	}
+    }
 
-    public async joinRoom(data: {roomId: number, userId: number}): Promise<ServiceResponse> {
-        const {roomId, userId} = data
+    public async joinRoom(data: { roomId: number, userEmail: string }): Promise<ServiceResponse> {
+        const { roomId, userEmail } = data
 
-        const user = await this.authService.getUserById(userId);
+        const user = await this.authService.getUserByEmail(userEmail);
 
         if (!user) {
             return {
@@ -87,13 +87,13 @@ export default class RoomService {
 
 
 
-        if(currentMembers?.includes(userId)){
+        if (currentMembers?.includes(user?.id)) {
             return {
                 errorMessage: 'This user is already in this room',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
             };
         }
-        const newMembers = currentMembers && currentMembers?.length > 0 ? [...currentMembers, userId] : [] 
+        const newMembers = currentMembers && currentMembers?.length > 0 ? [...currentMembers, user?.id] : []
 
         room.members = newMembers as number[]
 
@@ -109,14 +109,14 @@ export default class RoomService {
 
     public async getRooms(): Promise<ServiceResponse> {
         const rooms = await this.roomDataService.getAll()
-          if (!rooms) {
+        if (!rooms) {
             return {
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
                 errorMessage: 'An error occured trying to fetch rooms',
             };
-          }
-      
-          return {
+        }
+
+        return {
             statusCode: 200,
             data: {
                 rooms,
@@ -124,12 +124,12 @@ export default class RoomService {
         };
     }
 
-    public async uploadRoomDetails(data: Partial<Room>): Promise<ServiceResponse> {
-        const {id, name} = data
+    public async updateRoomDetails(data: Partial<Room>): Promise<ServiceResponse> {
+        const { id, name } = data
 
         const room = await this.getRoomById(id as number)
 
-        if(!room){
+        if (!room) {
             return {
                 errorMessage: 'This room does not exist in our system',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -149,10 +149,10 @@ export default class RoomService {
 
     }
 
-    public async deleteRoom(roomId: number): Promise<ServiceResponse>{
+    public async deleteRoom(roomId: number): Promise<ServiceResponse> {
         const room = await this.getRoomById(roomId)
 
-        if(!room){
+        if (!room) {
             return {
                 errorMessage: 'This room does not exist in our system',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -170,18 +170,28 @@ export default class RoomService {
         };
     }
 
-    public async getRoomChats(data: {roomId: number, userId: number}): Promise<ServiceResponse>{
-        const {roomId, userId} = data
+    public async getRoomChats(data: { roomId: number, userEmail: string }): Promise<ServiceResponse> {
+        const { roomId, userEmail } = data
+
+        const user = await this.authService.getUserByEmail(userEmail);
+
+        if (!user) {
+            return {
+                errorMessage: 'This user does not exists in the system',
+                statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+            };
+        }
+
         const room = await this.getRoomById(roomId)
 
-        if(!room){
+        if (!room) {
             return {
                 errorMessage: 'This room does not exist in our system',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
             };
         }
 
-        if(!room.members?.includes(userId)){
+        if (!room.members?.includes(user?.id)) {
             return {
                 errorMessage: 'This user does not belong to this room, cannot access chats',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -192,9 +202,9 @@ export default class RoomService {
             filter: {
                 room: { _eq: roomId },
             },
-          });
+        });
 
-          return {
+        return {
             statusCode: 200,
             data: {
                 chats,
@@ -203,18 +213,10 @@ export default class RoomService {
 
     }
 
-    public async leaveRoom(data: {roomId: number, userId: number}): Promise<ServiceResponse>{
-        const {roomId, userId} = data
-        const room = await this.getRoomById(roomId)
+    public async leaveRoom(data: { roomId: number, userEmail: string }): Promise<ServiceResponse> {
+        const { roomId, userEmail } = data
 
-        if(!room){
-            return {
-                errorMessage: 'This room does not exist in our system',
-                statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
-            };
-        }
-
-        const user = await this.authService.getUserById(userId);
+        const user = await this.authService.getUserByEmail(userEmail);
 
         if (!user) {
             return {
@@ -223,7 +225,18 @@ export default class RoomService {
             };
         }
 
-        if(!room.members?.includes(userId)){
+        const room = await this.getRoomById(roomId)
+
+        if (!room) {
+            return {
+                errorMessage: 'This room does not exist in our system',
+                statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+            };
+        }
+
+       
+
+        if (!room.members?.includes(user?.id)) {
             return {
                 errorMessage: 'This user does not belong to this room, cannot access chats',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -233,7 +246,7 @@ export default class RoomService {
         // const userIndex = (room.members as number[]).findIndex((x) => x === userId)
 
         const newMembers = room?.members?.filter((x) => {
-            x === userId
+            x === user?.id
         })
 
         room.members = newMembers as number[]
@@ -243,6 +256,41 @@ export default class RoomService {
             statusCode: 200,
             data: {
                 room: roomData,
+            },
+        };
+    }
+
+    public async sendMessage(data: {roomId: number, userEmail: string, content: string}): Promise<ServiceResponse> {
+        const {roomId, userEmail, content} = data
+
+        const user = await this.authService.getUserByEmail(userEmail);
+
+        if (!user) {
+            return {
+                errorMessage: 'This user does not exists in the system',
+                statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+            };
+        }
+
+        const room = await this.getRoomById(roomId)
+
+        if (!room) {
+            return {
+                errorMessage: 'This room does not exist in our system',
+                statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+            };
+        }
+
+        const newMessage = await this.messageDataService.add({
+            roomId,
+            sender: user?.id,
+            content
+        })
+
+        return {
+            statusCode: 200,
+            data: {
+                message: newMessage,
             },
         };
     }

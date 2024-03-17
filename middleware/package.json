@@ -54,6 +54,7 @@
     "nodemailer": "^6.9.12",
     "otp-generator": "^4.0.1",
     "prettier": "^3.2.5",
+    "socket.io": "^4.7.5",
     "swagger-ui-express": "^5.0.0",
     "tsoa": "^6.1.4",
     "uuid": "^9.0.1"

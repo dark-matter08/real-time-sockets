@@ -16,8 +16,8 @@ import { Room } from '../room';
  * }
  */
 export default interface Message {
-  sender?: number;
-  receiver: number;
+  sender: number;
+  receiver?: number;
   id: number;
   content: string;
   media?: string[] | Image[];

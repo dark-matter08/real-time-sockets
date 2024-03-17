@@ -1,5 +1,5 @@
-import { Body, Example, Get, Post, Route, Tags } from "tsoa";
-import { Health, Room } from "../../models";
+import { Body, Delete, Example, Get, Path, Post, Put, Route, Tags } from "tsoa";
+import { Health, Message, Room } from "../../models";
 import { RoomService } from "../../services";
 import { ServiceResponse } from "../../utils";
 
@@ -9,11 +9,54 @@ import { ServiceResponse } from "../../utils";
 export default class RoomController {
 	private roomService: RoomService
 	constructor(
-		
-	){
+
+	) {
 
 		this.roomService = new RoomService()
 
+	}
+	/**
+	 * Return all rooms
+	 */
+	@Example<{ data: { rooms: Room[] }, statusCode: number }>(
+		{
+			statusCode: 201,
+			data: {
+				rooms: [{
+					id: 1,
+					createdBy: 1,
+					name: 'x1x1'
+				}, {
+					id: 2,
+					createdBy: 2,
+					name: 'x2x2'
+				}]
+			}
+		}
+	)
+	@Get("/")
+	public async getRooms(): Promise<ServiceResponse> {
+		return this.roomService.getRooms();
+	}
+
+	/**
+	 * Return singleRoom
+	 */
+	@Example<{ data: { room: Room }, statusCode: number }>(
+		{
+			statusCode: 201,
+			data: {
+				room: {
+					id: 1,
+					createdBy: 1,
+					name: 'x1x1'
+				}, 
+			}
+		}
+	)
+	@Get("/{roomId}")
+	public async getRoom(@Path() roomId: number): Promise<Room | undefined> {
+		return this.roomService.getRoomById(roomId);
 	}
 	/**
 	 * Test if API is available
@@ -29,9 +72,9 @@ export default class RoomController {
 	}
 
 	/**
-	 * create room
+	 * create new room
 	 */
-	@Example<{data: {room: Room}, statusCode: number}>(
+	@Example<{ data: { room: Room }, statusCode: number }>(
 		{
 			statusCode: 201,
 			data: {
@@ -43,30 +86,140 @@ export default class RoomController {
 		}
 	)
 	@Post('/create')
-  public async createRoom(
-    @Body() data: {  name: string, userId: number }
-  ): Promise<ServiceResponse> {
-	return this.roomService.createRoom(data)
-  }
+	public async createRoom(
+		@Body() data: { name: string, userId: number }
+	): Promise<ServiceResponse> {
+		return this.roomService.createRoom(data)
+	}
 
-  /**
-	 * create room
-	 */
-// 	@Example<{data: {room: Room}, statusCode: number}>(
-// 		{
-// 			statusCode: 201,
-// 			data: {
-// 				room: {
-// 					id: 1,
-// 					createdBy: 1
-// 				}
-// 			}
-// 		}
-// 	)
-// // 	@Post('/joinRoom')
-//   public async joinRoom(
-//     @Param() data: {  name: string, userId: number }
-//   ): Promise<ServiceResponse> {
-// 	return this.roomService.createRoom(data)
-//   }
+	/**
+	   * join an existing room
+	   */
+	@Example<{ data: { room: Room }, statusCode: number }>(
+		{
+			statusCode: 201,
+			data: {
+				room: {
+					id: 1,
+					createdBy: 1
+				}
+			}
+		}
+	)
+	@Post('/joinRoom/{roomId}')
+	public async joinRoom(
+		@Path() roomId: number, userEmail: string
+	): Promise<ServiceResponse> {
+		return this.roomService.joinRoom({ roomId, userEmail })
+	}
+
+	/**
+	   * update room details
+	   */
+	@Example<{ data: { room: Room }, statusCode: number }>(
+		{
+			statusCode: 201,
+			data: {
+				room: {
+					id: 1,
+					createdBy: 1
+				}
+			}
+		}
+	)
+	@Put('/{roomId}')
+	public async updateRoomDetails(
+		@Path() roomId: number, @Body() data: { name: string },
+	): Promise<ServiceResponse> {
+		return this.roomService.updateRoomDetails({ id: roomId, name: data.name })
+	}
+
+	/**
+	   * delete an existing room
+	   */
+	@Example<{ data: { room: Room }, statusCode: number }>(
+		{
+			statusCode: 201,
+			data: {
+				room: {
+					id: 1,
+					createdBy: 1
+				}
+			}
+		}
+	)
+	@Delete('/{roomId}')
+	public async deleteRoom(
+		@Path() roomId: number,
+	): Promise<ServiceResponse> {
+		return this.roomService.deleteRoom(roomId)
+	}
+
+	/**
+	   * get room chat list
+	   */
+	@Example<{ data: { chats: Message[] }, statusCode: number }>(
+		{
+			statusCode: 201,
+			data: {
+				chats: [{
+					sender: 1,
+					receiver: 2,
+					id: 1,
+					content: 'hello world',
+					timestamp: new Date(),
+				}]
+			}
+		}
+	)
+	@Get('/chats/{roomId}')
+	public async getRoomChats(
+		@Path() roomId: number, userEmail: string
+	): Promise<ServiceResponse> {
+		return this.roomService.getRoomChats({ roomId, userEmail })
+	}
+
+	/**
+	   * user leaves a room
+	   */
+	@Example<{ data: { room: Room }, statusCode: number }>(
+		{
+			statusCode: 201,
+			data: {
+				room: {
+					id: 1,
+					createdBy: 1
+				}
+			}
+		}
+	)
+	@Post('/leave/{roomId}')
+	public async leaveRoom(
+		@Path() roomId: number, userEmail: string
+	): Promise<ServiceResponse> {
+		return this.roomService.leaveRoom({ roomId, userEmail })
+	}
+
+	/**
+	   * delete an existing room
+	   */
+	@Example<{ data: { message: Message }, statusCode: number }>(
+		{
+			statusCode: 201,
+			data: {
+				message: {
+					id: 1,
+					sender: 1,
+					content: 'Hey there world',
+					timestamp: new Date()
+				}
+			}
+		}
+	)
+	@Post('/send-message/{roomId}')
+	public async sendMessage(
+		@Path() roomId: number, userEmail: string
+	): Promise<ServiceResponse> {
+		return this.roomService.leaveRoom({ roomId, userEmail })
+	}
 }
