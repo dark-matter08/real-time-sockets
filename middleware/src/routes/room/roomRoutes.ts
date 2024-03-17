@@ -57,7 +57,8 @@ export default class RoomRoutes {
 				if (isNaN(parseInt(req.params.id))) {
 					return res.status(500).send({ error: "Invalid room id" });
 				}
-				return res.send(await this.roomController.joinRoom(parseInt(req.params.id), res.locals['email']));
+				this.roomController.emailContext = res.locals['email']
+				return res.send(await this.roomController.joinRoom(parseInt(req.params.id)));
 			} catch (e) {
 				return res.status(500).send({ error: "unknown Error" });
 			}
@@ -90,7 +91,8 @@ export default class RoomRoutes {
 				if (isNaN(parseInt(req.params.id))) {
 					return res.status(500).send({ error: "Invalid room id" });
 				}
-				return res.send(await this.roomController.deleteRoom(parseInt(req.params.id)));
+				this.roomController.emailContext = res.locals['email']
+				return res.send(await this.roomController.getRoomChats(parseInt(req.params.id)));
 			} catch (e) {
 				return res.status(500).send({ error: "unknown Error" });
 			}
@@ -101,7 +103,9 @@ export default class RoomRoutes {
 				if (isNaN(parseInt(req.params.id))) {
 					return res.status(500).send({ error: "Invalid room id" });
 				}
-				return res.send(await this.roomController.leaveRoom(parseInt(req.params.id), res.locals['email']));
+				this.roomController.emailContext = res.locals['email']
+
+				return res.send(await this.roomController.leaveRoom(parseInt(req.params.id)));
 			} catch (e) {
 				return res.status(500).send({ error: "unknown Error" });
 			}
@@ -131,7 +135,9 @@ export default class RoomRoutes {
 					return res.status(500).send({ error: "Invalid room id" });
 				}
 
-				const result = await this.roomController.sendMessage(parseInt(req.params.id), res.locals['email'])
+				this.roomController.emailContext = res.locals['email']
+
+				const result = await this.roomController.sendMessage(parseInt(req.params.id))
 				
 				res.send(result);
 				this.socketService.socket?.emit('sendMessage', {roomId: parseInt(req.params.id), message: result.data.message})

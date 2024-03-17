@@ -8,10 +8,12 @@ import { ServiceResponse } from "../../utils";
 @Tags("Room Controller")
 export default class RoomController {
 	private roomService: RoomService
+	public emailContext: string
 	constructor(
 
 	) {
 
+		this.emailContext = ''
 		this.roomService = new RoomService()
 
 	}
@@ -108,9 +110,9 @@ export default class RoomController {
 	)
 	@Post('/joinRoom/{roomId}')
 	public async joinRoom(
-		@Path() roomId: number, userEmail: string
+		@Path() roomId: number
 	): Promise<ServiceResponse> {
-		return this.roomService.joinRoom({ roomId, userEmail })
+		return this.roomService.joinRoom({ roomId, userEmail: this.emailContext  })
 	}
 
 	/**
@@ -174,9 +176,9 @@ export default class RoomController {
 	)
 	@Get('/chats/{roomId}')
 	public async getRoomChats(
-		@Path() roomId: number, userEmail: string
+		@Path() roomId: number
 	): Promise<ServiceResponse> {
-		return this.roomService.getRoomChats({ roomId, userEmail })
+		return this.roomService.getRoomChats({ roomId, userEmail: this.emailContext  })
 	}
 
 	/**
@@ -195,9 +197,9 @@ export default class RoomController {
 	)
 	@Post('/leave/{roomId}')
 	public async leaveRoom(
-		@Path() roomId: number, userEmail: string
+		@Path() roomId: number
 	): Promise<ServiceResponse> {
-		return this.roomService.leaveRoom({ roomId, userEmail })
+		return this.roomService.leaveRoom({ roomId, userEmail: this.emailContext  })
 	}
 
 	/**
@@ -218,8 +220,8 @@ export default class RoomController {
 	)
 	@Post('/send-message/{roomId}')
 	public async sendMessage(
-		@Path() roomId: number, userEmail: string
+		@Path() roomId: number,
 	): Promise<ServiceResponse> {
-		return this.roomService.leaveRoom({ roomId, userEmail })
+		return this.roomService.leaveRoom({ roomId, userEmail: this.emailContext  })
 	}
 }
