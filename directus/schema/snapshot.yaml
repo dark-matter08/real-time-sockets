@@ -61,7 +61,7 @@ collections:
       color: null
       display_template: null
       group: null
-      hidden: true
+      hidden: false
       icon: import_export
       item_duplication_fields: null
       note: null
@@ -596,7 +596,7 @@ fields:
       display_options: null
       field: id
       group: null
-      hidden: true
+      hidden: false
       interface: null
       note: null
       options: null
@@ -634,7 +634,7 @@ fields:
       display_options: null
       field: Room_id
       group: null
-      hidden: true
+      hidden: false
       interface: null
       note: null
       options: null
@@ -672,7 +672,7 @@ fields:
       display_options: null
       field: Users_id
       group: null
-      hidden: true
+      hidden: false
       interface: null
       note: null
       options: null
