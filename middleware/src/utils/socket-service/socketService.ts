@@ -12,6 +12,8 @@ export default class SocketService {
         this.socket = null
         this.activeRooms = {}
         console.log("============== Socket Server Started =============");
+
+        
         
         this.io.on('connection', (socket: Socket) => {
             console.log('=============+> A user connected <+=');

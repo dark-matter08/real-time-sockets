@@ -17,9 +17,9 @@ class Server {
         methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
       })
     );
-    this.config();
-    directus_start();
     start_socket(this.app);
+    directus_start();
+    this.config();
   }
 
   public config(): void {

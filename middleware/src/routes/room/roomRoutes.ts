@@ -1,19 +1,23 @@
 import express from "express";
 import { RoomController } from "../../controllers";
-import { Socket } from "socket.io";
-import { socketInstance } from "../../utils/socket-service";
+import { Server, Socket } from "socket.io";
+import { ioInstance, socketInstance } from "../../utils/socket-service";
 // import { SocketService } from "../../utils/socket-service";
 
 export default class RoomRoutes {
 	public router: express.Router;
 	private roomController: RoomController
-	private socketInstance: Socket
+	private socketInstance: Socket | null
+	private ioInstance: Server
 
 	constructor() {
 		this.router = express.Router();
 		this.registerRoutes();
 		this.roomController = new RoomController()
 		this.socketInstance = socketInstance
+		this.ioInstance = ioInstance
+
+		
 	}
 
 	protected registerRoutes(): void {
@@ -123,9 +127,14 @@ export default class RoomRoutes {
 					return res.status(500).send({ error: "Room with that id does not exists" });
 				}
 				
-				this.socketInstance?.emit('joinRoom', parseInt(req.params.id))
+				// this.socketInstance?.emit('joinRoom', parseInt(req.params.id))
+				// console.log(this.ioInstance);
+				
+				this.ioInstance.to(req.params.id).emit('joinRoom', parseInt(req.params.id));
 				return res.send({message: `You have joined live message on room: ${room.name}` });
 			} catch (e) {
+				console.log(e);
+				
 				return res.status(500).send({ error: "unknown Error" });
 			}
 		});
