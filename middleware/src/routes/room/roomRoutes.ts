@@ -137,7 +137,7 @@ export default class RoomRoutes {
 
 				this.roomController.emailContext = res.locals['email']
 
-				const result = await this.roomController.sendMessage(parseInt(req.params.id))
+				const result = await this.roomController.sendMessage(parseInt(req.params.id), req.body)
 				
 				res.send(result);
 				this.socketService.socket?.emit('sendMessage', {roomId: parseInt(req.params.id), message: result.data.message})

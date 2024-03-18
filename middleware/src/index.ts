@@ -34,6 +34,14 @@ class Server {
       swaggerUi.setup(undefined, {
         swaggerOptions: {
           url: '/swagger.json',
+          components: {
+            securitySchemes: {
+              bearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+              },
+            },
+          },
         },
       })
     );
