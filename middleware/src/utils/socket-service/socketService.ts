@@ -42,6 +42,8 @@ export default class SocketService {
 
         this.socket?.on('sendMessage', (data) => {
             const { roomId, message } = data;
+            console.log("Sending ", message," to room: ", roomId);
+            
             this.io.to(roomId).emit('newMessage', { roomId, message });
         });
 

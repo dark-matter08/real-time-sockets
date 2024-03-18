@@ -16,13 +16,12 @@ export default class RoomService {
         this.roomUserJunctionDataService = new SimpleDataService<RoomUser>('Room_Users')
     }
 
-    public async getRoomById(roomId: number): Promise<Room | undefined> {
+    public async getRoomById(roomId: number, fields="*,members.*,createdBy.*, members.Users_id.*"): Promise<Room | undefined> {
         const room = await this.roomDataService.readByQuery({
             filter: {
                 id: { _eq: roomId },
             },
-            "fields": ["*"],
-
+            fields: fields,
             limit: -1,
         });
 
@@ -79,7 +78,7 @@ export default class RoomService {
             };
         }
 
-        const room = await this.getRoomById(roomId);
+        const room = await this.getRoomById(roomId, "*, members.*");
         if (!room) {
             return {
                 errorMessage: 'This room does not exist in the system',
@@ -89,7 +88,8 @@ export default class RoomService {
 
         const currentMembers = room.members ? room.members : []
 
-        if (currentMembers?.includes(user?.id)) {
+
+        if (currentMembers?.filter((x: any) => x.Users_id === user?.id).length > 1) {
             return {
                 errorMessage: 'This user is already in this room',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -103,7 +103,6 @@ export default class RoomService {
                 Users_id: user.id
             })
 
-            console.log(junction);
 
 
             if(!junction){
@@ -118,11 +117,7 @@ export default class RoomService {
             const newMembers = [...currentMembers, junction?.id]
             room.members = newMembers
 
-            console.log(room);
             const roomData = await this.roomDataService.update(room);
-
-            console.log(roomData);
-
 
             return {
                 statusCode: 200,
@@ -223,7 +218,10 @@ export default class RoomService {
             };
         }
 
-        if (!room.members?.includes(user?.id)) {
+        const currentMembers = room.members ? room.members : []
+
+
+        if (currentMembers?.filter((x: any) => x.Users_id === user?.id).length > 1) {
             return {
                 errorMessage: 'This user does not belong to this room, cannot access chats',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
@@ -257,7 +255,7 @@ export default class RoomService {
             };
         }
 
-        const room = await this.getRoomById(roomId)
+        const room = await this.getRoomById(roomId, "*, members.*")
 
         if (!room) {
             return {
@@ -265,21 +263,37 @@ export default class RoomService {
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
             };
         }
+        const currentMembers = room.members ? room.members : []
 
-
-
-        if (!room.members?.includes(user?.id)) {
+        if (currentMembers?.filter((x: any) => x?.Users_id === user?.id).length < 1) {
             return {
-                errorMessage: 'This user does not belong to this room, cannot access chats',
+                errorMessage: 'This user does not belong to this room, returning null',
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
             };
         }
 
         // const userIndex = (room.members as number[]).findIndex((x) => x === userId)
 
-        const newMembers = room?.members?.filter((x) => {
-            x === user?.id
+        const roomsToRemove = room?.members?.filter((x: any) => {
+            x.Users_id === user?.id
         })
+
+        if(roomsToRemove){
+
+            for (let index = 0; index < roomsToRemove.length; index++) {
+                const element = roomsToRemove[index];
+                await this.roomUserJunctionDataService.delete(element)
+                
+            }
+        }
+        
+
+        const newMembers = room?.members?.filter((x: any) => {
+            x.Users_id === user?.id
+        }).map((x: any) => x.id)
+
+        console.log(newMembers);
+        
 
         room.members = newMembers as number[]
         const roomData = await this.roomDataService.update(room);
@@ -294,6 +308,8 @@ export default class RoomService {
 
     public async sendMessage(data: { roomId: number, userEmail: string, content: string }): Promise<ServiceResponse> {
         const { roomId, userEmail, content } = data
+
+
 
         const user = await this.authService.getUserByEmail(userEmail);
 
@@ -313,8 +329,18 @@ export default class RoomService {
             };
         }
 
+        const currentMembers = room.members ? room.members : []
+
+
+        if (currentMembers?.filter((x: any) => x.Users_id === user?.id).length > 1) {
+            return {
+                errorMessage: 'This user does not belong to this room, cannot send message to this room',
+                statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+            };
+        }
+
         const newMessage = await this.messageDataService.add({
-            roomId,
+            room: roomId,
             sender: user?.id,
             content
         })

@@ -203,7 +203,7 @@ export default class RoomController {
 	}
 
 	/**
-	   * sends mssDE TO A ROOM
+	   * sends messages to a room
 	   */
 	@Example<{ data: { message: Message }, statusCode: number }>(
 		{
@@ -220,8 +220,8 @@ export default class RoomController {
 	)
 	@Post('/send-message/{roomId}')
 	public async sendMessage(
-		@Path() roomId: number, @Body() content: string
+		@Path() roomId: number, @Body() data: {content: string}
 	): Promise<ServiceResponse> {
-		return this.roomService.sendMessage({ roomId, userEmail: this.emailContext, content  })
+		return this.roomService.sendMessage({ roomId, userEmail: this.emailContext, content: data.content  })
 	}
 }

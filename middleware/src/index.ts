@@ -5,7 +5,7 @@ import routes from './routes';
 import cors from 'cors';
 import { directus_start } from './directus';
 import morgan from 'morgan';
-import { SocketService } from './utils/socket-service';
+import { start_socket } from './utils/socket-service';
 class Server {
   public app: express.Application;
 
@@ -19,7 +19,7 @@ class Server {
     );
     this.config();
     directus_start();
-    new SocketService(this.app);
+    start_socket(this.app);
   }
 
   public config(): void {
