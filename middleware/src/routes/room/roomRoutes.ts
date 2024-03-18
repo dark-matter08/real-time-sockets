@@ -46,6 +46,7 @@ export default class RoomRoutes {
 
 		this.router.post("/create", async (req, res, _next) => {
 			try {
+				this.roomController.emailContext = res.locals['email']
 				return res.send(await this.roomController.createRoom(req.body));
 			} catch (e) {
 				return res.status(500).send({ error: "unknown Error" });

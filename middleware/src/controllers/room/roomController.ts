@@ -89,9 +89,9 @@ export default class RoomController {
 	)
 	@Post('/create')
 	public async createRoom(
-		@Body() data: { name: string, userId: number }
+		@Body() data: { name: string }
 	): Promise<ServiceResponse> {
-		return this.roomService.createRoom(data)
+		return this.roomService.createRoom({name: data.name,  userEmail: this.emailContext})
 	}
 
 	/**
@@ -108,7 +108,7 @@ export default class RoomController {
 			}
 		}
 	)
-	@Post('/joinRoom/{roomId}')
+	@Post('/join/{roomId}')
 	public async joinRoom(
 		@Path() roomId: number
 	): Promise<ServiceResponse> {

@@ -1,4 +1,4 @@
-import { Health, Message, Room } from "../../models";
+import { Health, Message, Room, RoomUser } from "../../models";
 import { ResponseCode, ServiceResponse } from "../../utils";
 import { AuthService } from "../auth";
 import { SimpleDataService } from "../utils";
@@ -6,12 +6,14 @@ import { SimpleDataService } from "../utils";
 export default class RoomService {
     private authService: AuthService
     private roomDataService: SimpleDataService<Room>
+    private roomUserJunctionDataService: SimpleDataService<RoomUser>
     private messageDataService: SimpleDataService<Message>
 
     constructor() {
         this.authService = new AuthService()
         this.roomDataService = new SimpleDataService<Room>('Room')
         this.messageDataService = new SimpleDataService<Message>('Message')
+        this.roomUserJunctionDataService = new SimpleDataService<RoomUser>('Room_Users')
     }
 
     public async getRoomById(roomId: number): Promise<Room | undefined> {
@@ -19,6 +21,7 @@ export default class RoomService {
             filter: {
                 id: { _eq: roomId },
             },
+            "fields": ["*"],
 
             limit: -1,
         });
@@ -36,10 +39,10 @@ export default class RoomService {
         };
     }
 
-    public async createRoom(data: { name: string, userId: number }): Promise<ServiceResponse> {
-        const { name, userId } = data
+    public async createRoom(data: { name: string, userEmail: string }): Promise<ServiceResponse> {
+        const { name, userEmail } = data
 
-        const user = await this.authService.getUserById(userId);
+        const user = await this.authService.getUserByEmail(userEmail);
 
         if (!user) {
             return {
@@ -51,7 +54,8 @@ export default class RoomService {
 
         const newRoom = await this.roomDataService.add({
             name,
-            createdBy: userId
+            createdBy: user.id,
+            date_created: new Date()
         })
 
 
@@ -83,9 +87,7 @@ export default class RoomService {
             };
         }
 
-        const currentMembers = room.members
-
-
+        const currentMembers = room.members ? room.members : []
 
         if (currentMembers?.includes(user?.id)) {
             return {
@@ -93,18 +95,48 @@ export default class RoomService {
                 statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
             };
         }
-        const newMembers = currentMembers && currentMembers?.length > 0 ? [...currentMembers, user?.id] : []
 
-        room.members = newMembers as number[]
+        try {
 
-        const roomData = await this.roomDataService.update(room);
+            const junction = await this.roomUserJunctionDataService.add({
+                Room_id: room.id,
+                Users_id: user.id
+            })
 
-        return {
-            statusCode: 200,
-            data: {
-                room: roomData,
-            },
-        };
+            console.log(junction);
+
+
+            if(!junction){
+                return {
+                    errorMessage: 'An error occured trying to update room',
+                    statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+                };
+            }
+
+
+
+            const newMembers = [...currentMembers, junction?.id]
+            room.members = newMembers
+
+            console.log(room);
+            const roomData = await this.roomDataService.update(room);
+
+            console.log(roomData);
+
+
+            return {
+                statusCode: 200,
+                data: {
+                    room: roomData,
+                },
+            };
+        } catch (error) {
+            return {
+                errorMessage: 'An error occured trying to update room',
+                statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
+            };
+        }
+
     }
 
     public async getRooms(): Promise<ServiceResponse> {
@@ -234,7 +266,7 @@ export default class RoomService {
             };
         }
 
-       
+
 
         if (!room.members?.includes(user?.id)) {
             return {
@@ -260,8 +292,8 @@ export default class RoomService {
         };
     }
 
-    public async sendMessage(data: {roomId: number, userEmail: string, content: string}): Promise<ServiceResponse> {
-        const {roomId, userEmail, content} = data
+    public async sendMessage(data: { roomId: number, userEmail: string, content: string }): Promise<ServiceResponse> {
+        const { roomId, userEmail, content } = data
 
         const user = await this.authService.getUserByEmail(userEmail);
 

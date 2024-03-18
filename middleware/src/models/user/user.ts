@@ -4,7 +4,7 @@ import { Image } from '../image';
  * @example
  * {
  *   "id": 1,
- *   "name": "GasVisor Admin",
+ *   "name": "RTS Admin",
  *   "email": "admin@example.com",
  *   "password": "d1r3ctu5",
  *   "verification_code": "xxxx",

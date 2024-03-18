@@ -7,6 +7,7 @@ import { User } from '../user';
  *   "members": [1, 2],
  *   "name": "Premier Chat room",
  *   "dateCreated": "2024-03-13T09:50:45.523Z",
+ *   "createdBy": 1
  * }
  */
 export default interface Room {

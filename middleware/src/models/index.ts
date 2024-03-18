@@ -4,5 +4,6 @@ import { Message } from './message';
 import { Room } from './room';
 import { Role, Permission } from './authorization';
 import { Image } from './image';
+import { RoomUser } from './room-user';
 
-export { Health, User, Message, Room, Role, Permission, Image };
+export { Health, User, Message, Room, Role, Permission, Image, RoomUser };

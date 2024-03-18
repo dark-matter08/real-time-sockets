@@ -1,12 +1,13 @@
 import { authentication, createDirectus, realtime, rest } from '@directus/sdk';
 import { exit } from 'process';
 import { APPCONFIGS } from '../configs';
-import { Message, User, Room } from '../models';
+import { Message, User, Room, RoomUser } from '../models';
 
 export interface Backend {
   users: User[];
   message: Message[];
   room: Room[];
+  room_users: RoomUser[];
 }
 
 export type BackendKeys = keyof Backend;

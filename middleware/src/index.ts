@@ -33,17 +33,10 @@ class Server {
       swaggerUi.serve,
       swaggerUi.setup(undefined, {
         swaggerOptions: {
-          url: '/swagger.json',
-          components: {
-            securitySchemes: {
-              bearerAuth: {
-                type: 'http',
-                scheme: 'bearer',
-              },
-            },
-          },
+          url: '../swagger.json',
         },
       })
+      // swaggerUi.setup(swaggerDocument)
     );
 
     routes(this.app);

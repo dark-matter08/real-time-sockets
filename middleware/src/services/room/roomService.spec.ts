@@ -46,7 +46,7 @@ describe('RoomService', () => {
         it('should return error if user does not exist', async () => {
 			const mockGetUserById = jest.fn() as jest.MockedFunction<typeof AuthService.prototype.getUserById>;
             mockGetUserById.mockResolvedValue(undefined);
-            const mockRoomData = { name: 'Test Room', userId: 1 };
+            const mockRoomData = { name: 'Test Room', userEmail: 'testEmail@gmail.com' };
 
             const result = await roomService.createRoom(mockRoomData);
 

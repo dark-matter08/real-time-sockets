@@ -82,7 +82,7 @@ export default class SimpleDataService<T> {
       // element = await this.context.items(this.typeName).readOne(id);
     } catch (e) {
       console.log(e);
-      return;
+      throw e;
     }
 
     return element;
@@ -106,6 +106,7 @@ export default class SimpleDataService<T> {
       });
     } catch (e) {
       elements = [];
+      throw e;
     }
 
     return elements;
@@ -121,7 +122,7 @@ export default class SimpleDataService<T> {
       // addElement = await this.context.items(this.typeName).createOne(element);
     } catch (e) {
       console.log(e);
-      return;
+      throw e;
     }
 
     return addElement;
@@ -156,7 +157,8 @@ export default class SimpleDataService<T> {
       //   .updateOne(element.id, element);
     } catch (e) {
       console.log(e);
-      return;
+      throw e;
+      // return;
     }
 
     return updateElement;
@@ -175,7 +177,7 @@ export default class SimpleDataService<T> {
       //   .updateOne(element[uniqueKey], element);
     } catch (e) {
       console.log(e);
-      return;
+      throw e;
     }
 
     return updateElement;
@@ -189,7 +191,7 @@ export default class SimpleDataService<T> {
       // await this.context.items(this.typeName).deleteOne(element.id);
     } catch (e) {
       console.log(e);
-      return;
+      throw e;
     }
 
     return element;
@@ -201,7 +203,7 @@ export default class SimpleDataService<T> {
       // await this.context.items(this.typeName).deleteOne(element[uniqueKey]);
     } catch (e) {
       console.log(e);
-      return;
+      throw e;
     }
 
     return element;
@@ -225,6 +227,7 @@ export default class SimpleDataService<T> {
       });
     } catch (e) {
       elements = [];
+      throw e;
     }
 
     return elements;

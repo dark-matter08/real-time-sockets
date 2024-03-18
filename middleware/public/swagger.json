@@ -32,6 +32,187 @@
 				},
 				"type": "object",
 				"additionalProperties": true
+			},
+			"Image": {
+				"properties": {
+					"charset": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"duration": {
+						"type": "number",
+						"format": "double"
+					},
+					"embed": {
+						"type": "string"
+					},
+					"file": {},
+					"filename_disk": {
+						"type": "string"
+					},
+					"filename_download": {
+						"type": "string"
+					},
+					"filesize": {
+						"type": "number",
+						"format": "double"
+					},
+					"folder": {
+						"type": "string"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"location": {
+						"type": "string"
+					},
+					"metadata": {
+						"type": "string"
+					},
+					"modified_by": {
+						"type": "string"
+					},
+					"modified_on": {
+						"type": "string"
+					},
+					"storage": {
+						"type": "string"
+					},
+					"tags": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"uploaded_by": {
+						"type": "string"
+					},
+					"uploaded_on": {
+						"type": "string"
+					},
+					"width": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"User": {
+				"properties": {
+					"devices": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"email": {
+						"type": "string"
+					},
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"is_verified": {
+						"type": "boolean"
+					},
+					"language": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"profile_photo": {
+						"$ref": "#/components/schemas/Image"
+					},
+					"verification_code": {
+						"type": "string"
+					},
+					"website": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true,
+				"example": {
+					"id": 1,
+					"name": "GasVisor Admin",
+					"email": "admin@example.com",
+					"password": "d1r3ctu5",
+					"verification_code": "xxxx",
+					"devices": [
+						"device_1",
+						"device_2"
+					],
+					"is_verified": true,
+					"phone": "+2376500000000",
+					"website": "ndelucien.com",
+					"profilePicture": "3581f21f-c985-42e4-8bba-dc1e154eaaba"
+				}
+			},
+			"Room": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"members": {
+						"anyOf": [
+							{
+								"items": {
+									"$ref": "#/components/schemas/User"
+								},
+								"type": "array"
+							},
+							{
+								"items": {
+									"type": "number",
+									"format": "double"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"name": {
+						"type": "string"
+					},
+					"date_created": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/User"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
+					}
+				},
+				"required": [
+					"createdBy"
+				],
+				"type": "object",
+				"additionalProperties": true
 			}
 		},
 		"securitySchemes": {}
@@ -106,6 +287,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"name": {
+										"type": "string"
+									},
 									"password": {
 										"type": "string"
 									},
@@ -114,6 +298,7 @@
 									}
 								},
 								"required": [
+									"name",
 									"password",
 									"email"
 								],
@@ -373,6 +558,495 @@
 									"currentPassword"
 								],
 								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/room": {
+			"get": {
+				"operationId": "GetRooms",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"rooms": [
+													{
+														"id": 1,
+														"createdBy": 1,
+														"name": "x1x1"
+													},
+													{
+														"id": 2,
+														"createdBy": 2,
+														"name": "x2x2"
+													}
+												]
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Return all rooms",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/room/{roomId}": {
+			"get": {
+				"operationId": "GetRoom",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Room"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"room": {
+													"id": 1,
+													"createdBy": 1,
+													"name": "x1x1"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Return singleRoom",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "roomId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateRoomDetails",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"room": {
+													"id": 1,
+													"createdBy": 1
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "update room details",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "roomId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteRoom",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"room": {
+													"id": 1,
+													"createdBy": 1
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "delete an existing room",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "roomId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/room/health": {
+			"get": {
+				"operationId": "GetHealth",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Health"
+								},
+								"examples": {
+									"Example 1": {
+										"value": [
+											{
+												"message": "pong"
+											}
+										]
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Test if API is available",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/room/create": {
+			"post": {
+				"operationId": "CreateRoom",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"room": {
+													"id": 1,
+													"createdBy": 1
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "create new room",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"userId": {
+										"type": "number",
+										"format": "double"
+									},
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"userId",
+									"name"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/room/joinRoom/{roomId}": {
+			"post": {
+				"operationId": "JoinRoom",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"room": {
+													"id": 1,
+													"createdBy": 1
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "join an existing room",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "roomId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/room/chats/{roomId}": {
+			"get": {
+				"operationId": "GetRoomChats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"chats": [
+													{
+														"sender": 1,
+														"receiver": 2,
+														"id": 1,
+														"content": "hello world",
+														"timestamp": "2024-03-18T06:39:51.593Z"
+													}
+												]
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "get room chat list",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "roomId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/room/leave/{roomId}": {
+			"post": {
+				"operationId": "LeaveRoom",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"room": {
+													"id": 1,
+													"createdBy": 1
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "user leaves a room",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "roomId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/room/send-message/{roomId}": {
+			"post": {
+				"operationId": "SendMessage",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"statusCode": 201,
+											"data": {
+												"message": {
+													"id": 1,
+													"sender": 1,
+													"content": "Hey there world",
+													"timestamp": "2024-03-18T06:39:51.594Z"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "sends mssDE TO A ROOM",
+				"tags": [
+					"Room Controller"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "roomId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "string"
 							}
 						}
 					}
