@@ -1,16 +1,16 @@
-import { APPCONFIGS } from '../../configs';
+import { APPCONFIGS } from "../../configs";
 // import { User } from "../../types";
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import { SimpleDataService } from '../utils';
-import { MailService, ResponseCode, ServiceResponse, Utils } from '../../utils';
-import { User } from '../../models';
-import { Liquid } from 'liquidjs';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { SimpleDataService } from "../utils";
+import { MailService, ResponseCode, ServiceResponse, Utils } from "../../utils";
+import { User } from "../../models";
+import { Liquid } from "liquidjs";
 // import axios from 'axios';
 
 const engine = new Liquid({
-  root: '/app/src/static/templates',
-  extname: '.liquid',
+  root: "/app/src/static/templates",
+  extname: ".liquid",
 });
 export default class AuthService {
   private userDataService: SimpleDataService<User>;
@@ -18,7 +18,7 @@ export default class AuthService {
   private utilsService: Utils;
 
   constructor() {
-    this.userDataService = new SimpleDataService<User>('Users');
+    this.userDataService = new SimpleDataService<User>("Users");
     this.mailService = new MailService();
     this.utilsService = new Utils();
   }
@@ -72,7 +72,7 @@ export default class AuthService {
 
     if (userByEmail) {
       return {
-        errorMessage: 'There is already a user with this email',
+        errorMessage: "There is already a user with this email",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
@@ -90,12 +90,12 @@ export default class AuthService {
       console.log(error);
       return {
         errorMessage:
-          'There was an error while trying to generate the otp code.',
+          "There was an error while trying to generate the otp code.",
         statusCode: ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR,
       };
     }
 
-    const message = 'Your one time pass code (otp) is: ' + code + ', Thank you';
+    const message = "Your one time pass code (otp) is: " + code + ", Thank you";
 
     const mailResult = await this.mailService.sendMail(
       email,
@@ -106,7 +106,7 @@ export default class AuthService {
     if (!mailResult || mailResult?.sent === false) {
       return {
         errorMessage:
-          'Error sending verification email, please try again later',
+          "Error sending verification email, please try again later",
         statusCode: ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR,
       };
     }
@@ -128,7 +128,7 @@ export default class AuthService {
       };
     } catch (error) {
       return {
-        errorMessage: 'request body is not well defined',
+        errorMessage: "request body is not well defined",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
@@ -171,29 +171,25 @@ export default class AuthService {
     verification_code: string;
   }): Promise<ServiceResponse> {
     const user = await this.getUserByEmail(data.email);
-
     if (!user) {
       return {
-        errorMessage: 'There is no account in our system with this email',
+        errorMessage: "There is no account in our system with this email",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
 
-    if (user['is_verified']) {
+    if (user["is_verified"]) {
       return {
-        errorMessage: 'This account has already been verified',
+        errorMessage: "This account has already been verified",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
 
     try {
-      const equal = this.comparePassword(
-        data.verification_code,
-        user['verification_code']
-      );
+      const equal = data.verification_code === user["verification_code"];
 
       if (equal) {
-        user['is_verified'] = true;
+        user["is_verified"] = true;
         const updateUser = await this.userDataService.update(user);
 
         return {
@@ -204,13 +200,13 @@ export default class AuthService {
         };
       } else {
         return {
-          errorMessage: 'Invalid verification code',
+          errorMessage: "Invalid verification code",
           statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
         };
       }
     } catch (error) {
       return {
-        errorMessage: 'Invalid payload format',
+        errorMessage: "Invalid payload format",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
@@ -225,7 +221,7 @@ export default class AuthService {
 
     if (!user) {
       return {
-        errorMessage: 'There is no account in our system with this email',
+        errorMessage: "There is no account in our system with this email",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
@@ -244,17 +240,17 @@ export default class AuthService {
     //   };
     // }
 
-    const equal = this.comparePassword(data.password, user['password']);
+    const equal = this.comparePassword(data.password, user["password"]);
     console.log(equal);
 
     if (!equal) {
       return {
-        errorMessage: 'Incorrect email and password combination',
+        errorMessage: "Incorrect email and password combination",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
 
-    let currentDevices = user['devices'];
+    let currentDevices = user["devices"];
     let newDevicesList;
 
     if (!currentDevices) {
@@ -275,18 +271,18 @@ export default class AuthService {
       }
     }
 
-    user['devices'] = newDevicesList;
+    user["devices"] = newDevicesList;
 
     const new_user = await this.userDataService.update(user);
 
     if (!user) {
       return {
-        errorMessage: 'There is no account in our system with this email',
+        errorMessage: "There is no account in our system with this email",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
 
-    const tokenObj = this.createAuthToken(user['email']);
+    const tokenObj = this.createAuthToken(user["email"]);
     return {
       data: {
         user: new_user,
@@ -300,7 +296,7 @@ export default class AuthService {
     const user = await this.getUserByEmail(email);
     if (!user) {
       return {
-        errorMessage: 'There is no account in our system with this email',
+        errorMessage: "There is no account in our system with this email",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
@@ -314,13 +310,13 @@ export default class AuthService {
       console.log(error);
       return {
         errorMessage:
-          'There was an error while trying to generate the otp code.',
+          "There was an error while trying to generate the otp code.",
         statusCode: ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR,
       };
     }
 
     // Sends User verification mail
-    const text: string = await engine.renderFile('account-verification', {
+    const text: string = await engine.renderFile("account-verification", {
       otpcode: code,
     });
 
@@ -330,26 +326,26 @@ export default class AuthService {
       text
     );
 
-    if (!mailResult?.sent === false) {
+    if (mailResult?.sent === false) {
       console.log(mailResult.error);
       return {
         errorMessage:
-          'Error sending verification email, please try again later',
+          "Error sending verification email, please try again later",
         statusCode: ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR,
       };
     }
 
     let updatedUser: User;
 
-    user['verification_code'] = signedCode;
-    user['is_verified'] = false;
+    user["verification_code"] = signedCode;
+    user["is_verified"] = false;
 
     try {
       updatedUser = await this.userDataService.update(user);
 
       if (!updatedUser) {
         return {
-          errorMessage: 'There was an error sending reset token for password',
+          errorMessage: "There was an error sending reset token for password",
           statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
         };
       } else {
@@ -359,7 +355,7 @@ export default class AuthService {
       }
     } catch (error) {
       return {
-        errorMessage: 'request body is not well defined',
+        errorMessage: "request body is not well defined",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
@@ -371,14 +367,14 @@ export default class AuthService {
     const user: User | undefined = await this.getUserByEmail(email);
     if (!user) {
       return {
-        errorMessage: 'There is no account in our system with this email',
+        errorMessage: "There is no account in our system with this email",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
 
     if (user?.is_verified) {
       return {
-        errorMessage: 'This account has already been verified',
+        errorMessage: "This account has already been verified",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
@@ -393,12 +389,12 @@ export default class AuthService {
       console.log(error);
       return {
         errorMessage:
-          'There was an error while trying to generate the otp code.',
+          "There was an error while trying to generate the otp code.",
         statusCode: ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR,
       };
     }
 
-    const message = 'Your one time pass code (otp) is: ' + code + ', Thank you';
+    const message = "Your one time pass code (otp) is: " + code + ", Thank you";
     // // Sends User verification mail
     // const text: string = await engine.renderFile('account-verification', {
     //   otpcode: code,
@@ -418,7 +414,7 @@ export default class AuthService {
       console.log(mailResult.error);
       return {
         errorMessage:
-          'Error sending verification email, please try again later',
+          "Error sending verification email, please try again later",
         statusCode: ResponseCode.HTTP_500_INTERNAL_SERVER_ERROR,
       };
     }
@@ -429,7 +425,7 @@ export default class AuthService {
     try {
       if (!updatedUser) {
         return {
-          errorMessage: 'There was an error sending reset token for password',
+          errorMessage: "There was an error sending reset token for password",
           statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
         };
       } else {
@@ -439,7 +435,7 @@ export default class AuthService {
       }
     } catch (error) {
       return {
-        errorMessage: 'request body is not well defined',
+        errorMessage: "request body is not well defined",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
@@ -452,23 +448,23 @@ export default class AuthService {
     const user = await this.getUserByEmail(data.email);
     if (!user) {
       return {
-        errorMessage: 'There is no account in our system with this email',
+        errorMessage: "There is no account in our system with this email",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
 
-    if (!user['is_verified']) {
+    if (!user["is_verified"]) {
       return {
-        errorMessage: 'User email has not been verified',
+        errorMessage: "User email has not been verified",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
 
     const hashedPassword = this.hashPassword(data.password);
 
-    user['password'] = hashedPassword;
+    user["password"] = hashedPassword;
 
-    const tokenObj = this.createAuthToken(user['email']);
+    const tokenObj = this.createAuthToken(user["email"]);
 
     const userData = await this.userDataService.update(user);
 
@@ -493,22 +489,22 @@ export default class AuthService {
     if (!user) {
       return {
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
-        errorMessage: 'User with the email not found',
+        errorMessage: "User with the email not found",
       };
     }
 
-    if (!this.comparePassword(currentPassword, user?.['password'])) {
+    if (!this.comparePassword(currentPassword, user?.["password"])) {
       return {
-        errorMessage: 'your current password is incorrect',
+        errorMessage: "your current password is incorrect",
         statusCode: ResponseCode.HTTP_400_BAD_REQUEST,
       };
     }
 
     const hashedPassword = this.hashPassword(newPassword);
 
-    user['password'] = hashedPassword;
+    user["password"] = hashedPassword;
 
-    const tokenObj = this.createAuthToken(user?.['email']);
+    const tokenObj = this.createAuthToken(user?.["email"]);
 
     const userData = await this.userDataService.update(user);
 
