@@ -67,7 +67,7 @@ services:
     container_name: directus
     build: ./directus
     ports:
-      - 8080:8055
+      - 8055:8055
 
     command: sh -c "npm exec directus bootstrap; npx directus schema apply --yes ./schema/snapshot.yaml; npm exec directus start"
 
@@ -84,6 +84,7 @@ services:
     environment:
       KEY: '29a89721-46e0-4d85-a7b8-1e1097a70feb'
       SECRET: '9e8bce1b-c54d-4281-99fb-0e00d8cc2516'
+      PUBLIC_URL: '/'
 
       DB_CLIENT: 'pg'
       DB_HOST: 'database'
@@ -96,7 +97,7 @@ services:
       CACHE_STORE: 'redis'
       CACHE_REDIS: 'redis://cache:6379'
 
-      LOG_LEVEL: 'warn'
+      LOG_LEVEL: 'info'
 
       ADMIN_EMAIL: 'admin@example.com'
       ADMIN_PASSWORD: 'd1r3ctu5'
@@ -110,10 +111,10 @@ services:
 
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8055/admin || exit 1
-      interval: 3s
-      timeout: 3s
+      interval: 10s
+      timeout: 10s
       retries: 30
-      start_period: 5s
+      start_period: 90s
 
 volumes:
   rts_directus_db_volume:

@@ -465,7 +465,15 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"type": "string"
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"email"
+								],
+								"type": "object"
 							}
 						}
 					}
