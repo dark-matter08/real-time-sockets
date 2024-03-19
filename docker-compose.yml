@@ -11,6 +11,7 @@ services:
       - ./middleware/tsconfig.json:/app/tsconfig.json
       - ./middleware/tsoa.json:/app/tsoa.json
       - ./middleware/jest.config.ts:/app/jest.config.ts
+      - ./middleware/public/swagger.json:/app/public/swagger.json
     environment:
       PORT: 8000
       DIRECTUS_ENDPOINT: 'http://directus:8055/'
