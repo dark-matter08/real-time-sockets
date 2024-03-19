@@ -5,7 +5,7 @@ services:
       context: ./middleware
       dockerfile: Dockerfile
     restart: unless-stopped
-    command: sh -c "wait && npm run dev"
+    command: sh -c "wait && npm run test && npm run build && npm run dev"
     volumes:
       - ./middleware/src:/app/src
       - ./middleware/tsconfig.json:/app/tsconfig.json
@@ -110,10 +110,10 @@ services:
 
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8055/admin || exit 1
-      interval: 1s
-      timeout: 1s
+      interval: 3s
+      timeout: 3s
       retries: 30
-      start_period: 1s
+      start_period: 5s
 
 volumes:
   rts_directus_db_volume:
