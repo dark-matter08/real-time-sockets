@@ -18,7 +18,6 @@ export default class AuthUtils {
     const pathFragment = "/webhook";
     // Except webhook endpoints.
     if (request.path.includes(pathFragment)) return next();
-    console.log(request.headers, request.cookies);
     if (!request.headers.authorization) {
       response
         .status(ResponseCode.HTTP_401_UNAUTHORIZED)

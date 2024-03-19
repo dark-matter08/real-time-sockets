@@ -669,7 +669,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -713,7 +717,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -775,7 +783,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -817,7 +829,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": []
 			}
 		},
@@ -853,7 +869,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -907,7 +927,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -958,7 +982,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -1004,7 +1032,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -1052,7 +1084,11 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
