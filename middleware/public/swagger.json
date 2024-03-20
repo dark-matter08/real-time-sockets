@@ -225,13 +225,7 @@
 				}
 			}
 		},
-		"securitySchemes": {
-				"BearerAuth":{
-				"type": "http",
-				"scheme": "bearer",
-				"bearerFormat": "JWT"
-			}
-		}
+		"securitySchemes": {}
 	},
 	"info": {
 		"title": "real-time-socket",
@@ -481,15 +475,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"email"
-								],
-								"type": "object"
+								"type": "string"
 							}
 						}
 					}
@@ -628,11 +614,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": []
 			}
 		},
@@ -669,11 +651,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
@@ -717,11 +695,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
@@ -783,11 +757,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
@@ -829,11 +799,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": []
 			}
 		},
@@ -869,11 +835,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -927,11 +889,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
@@ -967,7 +925,7 @@
 														"receiver": 2,
 														"id": 1,
 														"content": "hello world",
-														"timestamp": "2024-03-19T17:48:47.920Z"
+														"timestamp": "2024-03-20T05:17:22.933Z"
 													}
 												]
 											}
@@ -982,11 +940,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
@@ -1032,11 +986,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
@@ -1070,7 +1020,7 @@
 													"id": 1,
 													"sender": 1,
 													"content": "Hey there world",
-													"timestamp": "2024-03-19T17:48:47.922Z"
+													"timestamp": "2024-03-20T05:17:22.935Z"
 												}
 											}
 										}
@@ -1084,11 +1034,7 @@
 				"tags": [
 					"Room Controller"
 				],
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
