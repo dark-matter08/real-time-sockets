@@ -1,11 +1,11 @@
-import express from 'express';
-import swaggerUi from 'swagger-ui-express';
-import { APPCONFIGS } from './configs';
-import routes from './routes';
-import cors from 'cors';
-import { directus_start } from './directus';
-import morgan from 'morgan';
-import { start_socket } from './utils/socket-service';
+import express from "express";
+import swaggerUi from "swagger-ui-express";
+import { APPCONFIGS } from "./configs";
+import routes from "./routes";
+import cors from "cors";
+import { directus_start } from "./directus";
+import morgan from "morgan";
+import { serverInstance, start_socket } from "./utils/socket-service";
 class Server {
   public app: express.Application;
 
@@ -13,8 +13,8 @@ class Server {
     this.app = express();
     this.app.use(
       cors({
-        origin: '*',
-        methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
+        origin: "*",
+        methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
       })
     );
     start_socket(this.app);
@@ -23,17 +23,17 @@ class Server {
   }
 
   public config(): void {
-    this.app.set('port', APPCONFIGS.PORT);
+    this.app.set("port", APPCONFIGS.PORT);
     this.app.use(express.json());
-    this.app.use(express.static('public'));
-    this.app.use(morgan('tiny'));
+    this.app.use(express.static("public"));
+    this.app.use(morgan("tiny"));
 
     this.app.use(
-      '/docs',
+      "/docs",
       swaggerUi.serve,
       swaggerUi.setup(undefined, {
         swaggerOptions: {
-          url: '../swagger.json',
+          url: "../swagger.json",
         },
       })
       // swaggerUi.setup(swaggerDocument)
@@ -43,8 +43,8 @@ class Server {
   }
 
   public start(): void {
-    this.app.listen(this.app.get('port'), () => {
-      console.log('Server listening in port', APPCONFIGS.PORT);
+    serverInstance.listen(this.app.get("port"), () => {
+      console.log("Server listening in port", APPCONFIGS.PORT);
     });
   }
 }
