@@ -152,7 +152,7 @@
 				"additionalProperties": true,
 				"example": {
 					"id": 1,
-					"name": "GasVisor Admin",
+					"name": "RTS Admin",
 					"email": "admin@example.com",
 					"password": "d1r3ctu5",
 					"verification_code": "xxxx",
@@ -212,7 +212,17 @@
 					"createdBy"
 				],
 				"type": "object",
-				"additionalProperties": true
+				"additionalProperties": true,
+				"example": {
+					"id": 1,
+					"members": [
+						1,
+						2
+					],
+					"name": "Premier Chat room",
+					"dateCreated": "2024-03-13T09:50:45.523Z",
+					"createdBy": 1
+				}
 			}
 		},
 		"securitySchemes": {}
@@ -833,16 +843,11 @@
 						"application/json": {
 							"schema": {
 								"properties": {
-									"userId": {
-										"type": "number",
-										"format": "double"
-									},
 									"name": {
 										"type": "string"
 									}
 								},
 								"required": [
-									"userId",
 									"name"
 								],
 								"type": "object"
@@ -852,7 +857,7 @@
 				}
 			}
 		},
-		"/api/room/joinRoom/{roomId}": {
+		"/api/room/join/{roomId}": {
 			"post": {
 				"operationId": "JoinRoom",
 				"responses": {
@@ -920,7 +925,7 @@
 														"receiver": 2,
 														"id": 1,
 														"content": "hello world",
-														"timestamp": "2024-03-18T06:39:51.593Z"
+														"timestamp": "2024-03-20T05:17:22.933Z"
 													}
 												]
 											}
@@ -1015,7 +1020,7 @@
 													"id": 1,
 													"sender": 1,
 													"content": "Hey there world",
-													"timestamp": "2024-03-18T06:39:51.594Z"
+													"timestamp": "2024-03-20T05:17:22.935Z"
 												}
 											}
 										}
@@ -1025,7 +1030,7 @@
 						}
 					}
 				},
-				"description": "sends mssDE TO A ROOM",
+				"description": "sends messages to a room",
 				"tags": [
 					"Room Controller"
 				],
@@ -1046,7 +1051,15 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"type": "string"
+								"properties": {
+									"content": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"content"
+								],
+								"type": "object"
 							}
 						}
 					}
